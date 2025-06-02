@@ -1,0 +1,2 @@
+no wait, no of inputs will be always fixed;,
+if for each nodes or layers in a normal nn;

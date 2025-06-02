@@ -1,0 +1,1 @@
+can i create a class where from the constructor i take the array size, and initialize the size in it?
