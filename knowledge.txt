@@ -1,0 +1,5 @@
+*. Matrix form ≠ faster unless backed by optimized math under the hood.
+
+*. i thiink the idea of represnting these operations as
+ dot product itself is kinda not 100% true
+
