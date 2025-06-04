@@ -116,6 +116,32 @@ class Layer {
     }
 };
 
+
+class NN {
+    std::vector<Layer> layers;
+    public:
+    NN(std::vector<Layer> layers) : layers(layers) {
+
+    }
+    std::vector<float> run(std::vector<float> input) {
+        std::vector<float> result = input;
+        for(auto layer: layers) {
+            result = layer.run(result);
+        }
+        return result;
+    }
+
+    std::vector<std::vector<float>> runInputBatch(std::vector<std::vector<float>> inputBatch, int batchsize) {
+        std::vector<std::vector<float>> result;
+        for(int i=0; i<batchsize; ++i) {
+            std::vector<float> resultperbatch = run(inputBatch.at(i));
+            result.push_back(resultperbatch);
+        }
+        return result;
+    }
+
+};
+
 // i gotta remove the 4, no of inputs from node and Layers,
 // ways at which we create the layers can be improved, like it can be a matrix;
 
@@ -140,14 +166,46 @@ int main() {
     };
     std::cout<<"hello world";
     std::vector<float> result = l1.run({1, 2, 3, 2.5});
+    /*
     std::cout<<"\n\n\nresult";
     for (auto a: result) {
         std::cout << a<< " ";
     }
+    */
 
     std::vector<std::vector<float>> result2= l1.runInputBatch({{1, 2, 3, 2.5}, {2, 5, -1, 2}, {-1.5, 2.7, 3.3, -0.8}}, 3);
+    /*
     std::cout<<"\n\n\nresult2";
     for (auto result: result2) {
+        for (auto a: result) {
+            std::cout << a<< " ";
+        }
+        std::cout<<"\n";
+    }
+    */
+
+    inputsize = 3;
+    inputsize = 3;
+    Layer l2 {
+        inputsize,
+        nodecount,
+        {
+            Node{inputsize, -1, {0.1, -0.14, 0.5}},
+            Node{inputsize, 2, {-0.5, 0.12, -0.33}},
+            Node{inputsize, -0.5, {-0.44, 0.73, -0.13}},
+        }
+    };
+
+    NN nn {{l1, l2}};
+    std::vector<float> result3 = nn.run({1, 2, 3, 2.5});
+    std::cout<<"\n\n\nresult3 ";
+    for (auto a: result3) {
+        std::cout << a<< " ";
+    }
+
+    std::vector<std::vector<float>> result4 = nn.runInputBatch({{1, 2, 3, 2.5}, {2, 5, -1, 2}, {-1.5, 2.7, 3.3, -0.8}}, 3);
+    std::cout<<"\n\n\nresult4";
+    for (auto result: result4) {
         for (auto a: result) {
             std::cout << a<< " ";
         }
