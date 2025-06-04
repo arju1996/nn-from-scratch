@@ -4,6 +4,8 @@
 
 #include <cassert>
 
+#include "random.h"
+
 #define INPUTSIZE 4
 
 class NodeBasic {
@@ -116,6 +118,71 @@ class Layer {
     }
 };
 
+class DenseLayer {
+    int input_size_;
+    int no_of_nodes_;
+    std::vector<std::vector<double>> weights_;
+    std::vector<double> bias_;
+    public:
+    DenseLayer(int input_size, int no_of_nodes) : input_size_(input_size), no_of_nodes_(no_of_nodes) {
+        // set random weight to each of the nodes (of size input_size);
+        for(int i = 0 ; i < no_of_nodes_; ++i) {
+            weights_.push_back(math::random::GetRandomNormVector(0, 1, input_size_));
+            // scaling the weights down, i dont know why.
+            for(auto& item: weights_.back())
+                item /= 100;
+        }
+
+        // set random bias for each nodes
+        // in the original code this was set to 0, but lemme keep this as randoms to know why
+        // they kept it as 0;
+        bias_ = math::random::GetRandomNormVector(0, 1, no_of_nodes_);
+    }
+    void PrintDenseLayer() {
+        std::cout<<"hello this is the layer \n weights are \n";
+        for(auto weight: weights_) {
+            for(auto item: weight) {
+                std::cout<<item<<" ";
+            }
+            std::cout<<"\n";
+        }
+        std::cout<<"\nbiases are\n";
+        for(auto item: bias_) {
+            std::cout<<item<<" ";
+        }
+        std::cout<<"\n";
+    }
+
+    void whatever(){}
+
+    inline double VectorDotVector(std::vector<double> a, std::vector<double> b) {
+        assert(a.size() == b.size());
+        double result = 0;
+        for(int i = 0; i < a.size(); ++i) {
+            result += a.at(i) * b.at(i);
+        }
+        return result;
+    }
+
+    std::vector<double> run(std::vector<double> input) {
+        // run the input on each nodes
+        std::vector<double> result;
+        for(int i = 0; i < no_of_nodes_; ++i) {
+            result.push_back(VectorDotVector(weights_.at(i), input) + bias_.at(i));
+        }
+        return result;
+    }
+    
+    std::vector<std::vector<double>> runInputBatch(std::vector<std::vector<double>> inputBatch) {
+        std::vector<std::vector<double>> result;
+        // run the each inputs on the layer
+        for(int i = 0; i < inputBatch.size(); ++i) {
+            result.push_back(run(inputBatch.at(i)));
+        }
+        return result;
+    }
+};
+
 
 class NN {
     std::vector<Layer> layers;
@@ -210,6 +277,19 @@ int main() {
             std::cout << a<< " ";
         }
         std::cout<<"\n";
+    }
+
+    /*
+    create a Layer,
+    1. give no of inputs, no of nodes
+    2. initialize random weights and biases;
+    */
+    DenseLayer L1 {inputsize, nodecount};
+    L1.PrintDenseLayer();
+    std::vector<double> r5 = L1.run({1, 2, 3});
+    std::cout<<"\n\n\nresult5 ";
+    for (auto a: r5) {
+        std::cout << a<< " ";
     }
 
     return 0;

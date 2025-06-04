@@ -1,5 +1,6 @@
-.vscode
+.vscode/**
 *.exe
 *.ilk
 *.obj
 *.pdb
+build/**

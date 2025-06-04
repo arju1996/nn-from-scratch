@@ -3,3 +3,6 @@
 *. i thiink the idea of represnting these operations as
  dot product itself is kinda not 100% true
 
+*. Dense Layer (Fully Connected Layer) == A type of layer 
+where every input is connected to every output neuron.
+
