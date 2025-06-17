@@ -26,3 +26,9 @@ and how to do classification on it.
 point is, to understand the need of activation,
 as he said purpose of activation function is to bring non linearity
 else it could be just a linear regresion; added together
+
+=======
+*.
+// ideally i could create an activation class
+// and pass type of activation to constructor
+// as the idea is same just the processing is different

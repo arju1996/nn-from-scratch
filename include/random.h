@@ -1,17 +1,7 @@
 #pragma once
 
 #include <random>
-
 #include <tuple>
-
-// #include <vector>
-// // #include <cmath>
-
-// struct Point {
-//     double x;
-//     double y;
-//     int label;
-// };
 
 namespace math {
     namespace random {

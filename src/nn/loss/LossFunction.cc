@@ -55,7 +55,7 @@ double LossFunction::calculate(
     std::vector<int> y
 ) {
 
-    assert(output.size(), y.size());
+    assert(output.size() == y.size());
 
     std::vector<double> losses = forward(output, y);
     double avg_loss = 0.0;

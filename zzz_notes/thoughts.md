@@ -1,0 +1,1 @@
+1. each nueron need no of input count of  weights and a bias

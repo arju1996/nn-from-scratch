@@ -1,15 +1,12 @@
-#include <iostream>
 #include <array>
-#include <vector>
-
 #include <cassert>
-#include <DenseLayer.h>
-#include <ReLU.h>
-#include <Softmax.h>
+#include <iostream>
+#include <vector>
 
 #include "print.h"
 #include "random.h"
-#include "LossFunction.h"
+
+#include <nn.h>
 
 int findAccuracy(std::vector<std::vector<double>> y, std::vector<int> trueValues) {
     int correctCount = 0;

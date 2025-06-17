@@ -3,9 +3,6 @@
 *. i thiink the idea of represnting these operations as
  dot product itself is kinda not 100% true
 
-*. Dense Layer (Fully Connected Layer) == A type of layer 
-where every input is connected to every output neuron.
-
 *.np.sum(A, axis = 0) => seperate/cut via cols; and then sqeeze to a col
 ie if 4*2 => 2
 axis = 1 means row
@@ -31,11 +28,6 @@ its just plain max in row;
 
 *. softmax on a inputbatch of 3*4
 np.exp(w - np.max(W, axis = 1, keepdims =1)) / np.sum(W, axis = 1, keepdims = 1)
-
-
-
-=============
-gradient is the vector of partial derivatives
 
 ====
 strategy to improve nn
