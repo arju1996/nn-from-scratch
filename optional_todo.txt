@@ -1,0 +1,28 @@
+not needed now, do as things gets expanded:
+
+
+====
+
+1.think if i can same memory from relu class;
+2.add more asserts or make shape problem unbreakable with a list or something
+3. write whole code in python as well
+*.get spiral data; 
+
+=====
+
+*.proper class structuring for loss function,
+ie make loss function as the parent, and use pure virtual functions,
+right now its just a basic inheritance that wont allow multtiple loss functions
+*.write code to do the back propegation for single random neuron on single input;
+and optimise/reduce lose of it, by running 100 times;
+
+======
+*. try sin wave and category as above / on_or_under;
+for finding lose, just to experience with data class and its population
+and how to do classification on it.
+======
+
+*.but try approximating sinx without any activation function;
+point is, to understand the need of activation,
+as he said purpose of activation function is to bring non linearity
+else it could be just a linear regresion; added together

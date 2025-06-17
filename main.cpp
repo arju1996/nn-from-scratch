@@ -3,282 +3,46 @@
 #include <vector>
 
 #include <cassert>
+#include <DenseLayer.h>
+#include <ReLU.h>
+#include <Softmax.h>
 
+#include "print.h"
 #include "random.h"
+#include "LossFunction.h"
 
-#define INPUTSIZE 4
-
-class NodeBasic {
-    std::array<int, 3> input;
-    std::array<int, 3> weight;
-    int bias;
-    float output;
-    NodeBasic(std::array<int, 3> input, std::array<int, 3> weight, int bias) : input(input), weight(weight), bias(bias){
-
+int findAccuracy(std::vector<std::vector<double>> y, std::vector<int> trueValues) {
+    int correctCount = 0;
+    for(int i = 0 ; i < y.size(); ++i) {
+        auto prediction = y.at(i);
+        auto max = std::max_element(prediction.begin(), prediction.end());
+        auto dist = std::distance(prediction.begin(), max);
+        if(dist == trueValues.at(i))
+            correctCount++;
     }
 
-    float run() {
-        output = 0.0f;
-        for(int i = 0 ; i < input.size(); ++i) {
-            output += input[i]*weight[i];
-        }
-        output += bias;
-    }
-};
+    std::cout <<"correctCount = "<<correctCount;
+    return correctCount*100/trueValues.size();
+}
 
-// code in such a way that 4 inputs and 3 nodes in a later;
-class Node {
-    std::vector<float> weight;
-    float bias;
-    public:
-    Node(int inputsize,  float bias, std::vector<float> weight): weight(weight), bias(bias) {
-        // i could add some validations here
-        // like input size and weight size must be same.
-        // and add the same validations in the run part as well;
-    };
-    float run (std::vector<float> input) {
-        float result = 0.0f;
-        for (int i = 0; i < weight.size(); ++i) {
-            result += weight.at(i) * input.at(i);
-        }
-        result += bias;
-        return result;
-    }
-};
-
-class NodeFinal {
-    std::array<float, INPUTSIZE> weight;
-    float bias;
-    public:
-    NodeFinal(std::array<float, INPUTSIZE> weight, float bias): weight(weight), bias(bias) {};
-    float run (std::array<float, INPUTSIZE> input) {
-        float result = 0.0f;
-        for (int i = 0; i < weight.size(); ++i) {
-            result += weight.at(i) * input.at(i);
-        }
-        result += bias;
-        return result;
-    }
-};
-
-// each layer can have any many nodes as it wants;
-class Layer {
-    int inputsize, noofnodes;
-    std::vector<NodeFinal> nodes;
-    std::vector<Node> nodez;
-    public:
-    Layer(std::vector<NodeFinal> nodes) : nodes(nodes) {}
-    Layer(int inputsize, int noofnodes, std::vector<Node> nodes) : 
-        inputsize(inputsize), 
-        noofnodes(noofnodes), 
-        nodez(nodes) {
-        for(int i = 0; i < inputsize; ++i) {
-            //
-        }
-    }
-
-
-    // np.dot(input, w) + bias
-    // np.dot( w, input) + bias
-    // both are valid
-    std::vector<float> run(std::vector<float> input) {
-        assert(input.size() == inputsize);
-        std::vector<float> result;
-        for(auto node: nodez) {
-            float resultpernode = node.run(input);
-            result.push_back(resultpernode);
-        }
-        return result;
-    }
-
-    // so this naming doesnt make sense;
-    // as i can only do dot product on matrices;
-    // delete this
-    std::vector<float> runDotProduct(std::vector<float> input) {
-        assert(input.size() == inputsize);
-        std::vector<float> result;
-        for(auto node: nodez) {
-            float resultpernode = node.run(input);
-            result.push_back(resultpernode);
-        }
-        return result;
-    }
-
-
-    // np.dot(inputs, w^T) + bias
-    std::vector<std::vector<float>> runInputBatch(std::vector<std::vector<float>> inputBatch, int batchsize) {
-        assert(inputBatch.size() == batchsize);
-        // assert(input.size() == inputsize);
-        std::vector<std::vector<float>> result;
-        for(int i=0; i<batchsize; ++i) {
-            std::vector<float> resultperbatch = runDotProduct(inputBatch.at(i));
-            result.push_back(resultperbatch);
-        }
-        return result;
-    }
-};
-
-class DenseLayer {
-    int input_size_;
-    int no_of_nodes_;
-    std::vector<std::vector<double>> weights_;
-    std::vector<double> bias_;
-    public:
-    DenseLayer(int input_size, int no_of_nodes) : input_size_(input_size), no_of_nodes_(no_of_nodes) {
-        // set random weight to each of the nodes (of size input_size);
-        for(int i = 0 ; i < no_of_nodes_; ++i) {
-            weights_.push_back(math::random::GetRandomNormVector(0, 1, input_size_));
-            // scaling the weights down, i dont know why.
-            for(auto& item: weights_.back())
-                item /= 100;
-        }
-
-        // set random bias for each nodes
-        // in the original code this was set to 0, but lemme keep this as randoms to know why
-        // they kept it as 0;
-        bias_ = math::random::GetRandomNormVector(0, 1, no_of_nodes_);
-    }
-    void PrintDenseLayer() {
-        std::cout<<"hello this is the layer \n weights are \n";
-        for(auto weight: weights_) {
-            for(auto item: weight) {
-                std::cout<<item<<" ";
+std::pair< std::vector<std::vector<double>>, std::vector<int>> spiltToInputAndOutputs(std::vector<std::tuple<double, double, int>> data) {
+    std::vector<std::vector<double>> inputs;
+    std::vector<int> outputs;
+    for(auto item: data) {
+        inputs.push_back(
+            {
+            std::get<0>(item),
+            std::get<1>(item)
             }
-            std::cout<<"\n";
-        }
-        std::cout<<"\nbiases are\n";
-        for(auto item: bias_) {
-            std::cout<<item<<" ";
-        }
-        std::cout<<"\n";
+        );
+        outputs.push_back(std::get<2>(item));
     }
-
-    void whatever(){}
-
-    inline double VectorDotVector(std::vector<double> a, std::vector<double> b) {
-        assert(a.size() == b.size());
-        double result = 0;
-        for(int i = 0; i < a.size(); ++i) {
-            result += a.at(i) * b.at(i);
-        }
-        return result;
-    }
-
-    std::vector<double> run(std::vector<double> input) {
-        // run the input on each nodes
-        std::vector<double> result;
-        for(int i = 0; i < no_of_nodes_; ++i) {
-            result.push_back(VectorDotVector(weights_.at(i), input) + bias_.at(i));
-        }
-        return result;
-    }
-    
-    std::vector<std::vector<double>> runInputBatch(std::vector<std::vector<double>> inputBatch) {
-        std::vector<std::vector<double>> result;
-        // run the each inputs on the layer
-        for(int i = 0; i < inputBatch.size(); ++i) {
-            result.push_back(run(inputBatch.at(i)));
-        }
-        return result;
-    }
-};
-
-
-class NN {
-    std::vector<Layer> layers;
-    public:
-    NN(std::vector<Layer> layers) : layers(layers) {
-
-    }
-    std::vector<float> run(std::vector<float> input) {
-        std::vector<float> result = input;
-        for(auto layer: layers) {
-            result = layer.run(result);
-        }
-        return result;
-    }
-
-    std::vector<std::vector<float>> runInputBatch(std::vector<std::vector<float>> inputBatch, int batchsize) {
-        std::vector<std::vector<float>> result;
-        for(int i=0; i<batchsize; ++i) {
-            std::vector<float> resultperbatch = run(inputBatch.at(i));
-            result.push_back(resultperbatch);
-        }
-        return result;
-    }
-
-};
-
-// i gotta remove the 4, no of inputs from node and Layers,
-// ways at which we create the layers can be improved, like it can be a matrix;
+    return {inputs, outputs};
+}
 
 int main() {
-    int inputsize = 4;
-    int nodecount = 3;
-    Layer l1 {
-        inputsize,
-        nodecount,
-        {
-            // NodeFinal{{0.2, 0.3, 0.4, 0.4}, 0.2},
-            // NodeFinal{{0.1, 0.2, 0.3, 0.1}, 0.3},
-            // NodeFinal{{0.4, 0.1, 0.1, 0.2}, 0.4}
-
-            // Node{inputsize, 0.1, {0.1, 0.1, 0.1}},
-            // Node{inputsize, 0.2, {0.2, 0.2, 0.1}},
-
-            Node{inputsize, 2, {0.2, 0.8, -0.5, 1}},
-            Node{inputsize, 3, {0.5, -0.91, 0.26, -0.5}},
-            Node{inputsize, 0.5, {-0.26, -0.27, 0.17, 0.87}},
-        }
-    };
-    std::cout<<"hello world";
-    std::vector<float> result = l1.run({1, 2, 3, 2.5});
-    /*
-    std::cout<<"\n\n\nresult";
-    for (auto a: result) {
-        std::cout << a<< " ";
-    }
-    */
-
-    std::vector<std::vector<float>> result2= l1.runInputBatch({{1, 2, 3, 2.5}, {2, 5, -1, 2}, {-1.5, 2.7, 3.3, -0.8}}, 3);
-    /*
-    std::cout<<"\n\n\nresult2";
-    for (auto result: result2) {
-        for (auto a: result) {
-            std::cout << a<< " ";
-        }
-        std::cout<<"\n";
-    }
-    */
-
-    inputsize = 3;
-    inputsize = 3;
-    Layer l2 {
-        inputsize,
-        nodecount,
-        {
-            Node{inputsize, -1, {0.1, -0.14, 0.5}},
-            Node{inputsize, 2, {-0.5, 0.12, -0.33}},
-            Node{inputsize, -0.5, {-0.44, 0.73, -0.13}},
-        }
-    };
-
-    NN nn {{l1, l2}};
-    std::vector<float> result3 = nn.run({1, 2, 3, 2.5});
-    std::cout<<"\n\n\nresult3 ";
-    for (auto a: result3) {
-        std::cout << a<< " ";
-    }
-
-    std::vector<std::vector<float>> result4 = nn.runInputBatch({{1, 2, 3, 2.5}, {2, 5, -1, 2}, {-1.5, 2.7, 3.3, -0.8}}, 3);
-    std::cout<<"\n\n\nresult4";
-    for (auto result: result4) {
-        for (auto a: result) {
-            std::cout << a<< " ";
-        }
-        std::cout<<"\n";
-    }
-
+    int inputsize = 2;
+    int nodecount = 2;
     /*
     create a Layer,
     1. give no of inputs, no of nodes
@@ -286,11 +50,61 @@ int main() {
     */
     DenseLayer L1 {inputsize, nodecount};
     L1.PrintDenseLayer();
-    std::vector<double> r5 = L1.run({1, 2, 3});
-    std::cout<<"\n\n\nresult5 ";
-    for (auto a: r5) {
-        std::cout << a<< " ";
-    }
+    ReLU activation1;
+    DenseLayer L2 {2, 3};
+    Softmax activation2;
 
+
+
+
+    std::vector<double> input = {1, 2};
+    print::PrintVectorWithLabel(input, "\ninput");
+    std::vector<double> result1 = L1.run(input);
+    print::PrintVectorWithLabel(result1, "\nresult1");
+    std::vector<double> result1afteractivation = activation1.run(result1);
+    print::PrintVectorWithLabel(result1afteractivation, "\nresult1afteractivation");
+
+    std::vector<double> result2 = L2.run(result1afteractivation);
+    print::PrintVectorWithLabel(result2, "\nresult2");
+    std::vector<double> result2afteractivation = activation2.run(result2);
+    print::PrintVectorWithLabel(result2afteractivation, "\nresult2afteractivation");
+    
+    /*
+    std::vector<std::vector<double>> inputbatch = math::dataset::GenerateLinearDataV(2, 50, 0.2);
+    */
+    std::vector<std::tuple<double, double, int>> data = math::dataset::GenerateSineDataV(3, 50, 0.2);
+    std::pair< std::vector<std::vector<double>>, std::vector<int>> inputandoutput = 
+            spiltToInputAndOutputs(data);
+    
+
+    auto inputbatch = inputandoutput.first;
+
+    print::PrintVectorWithLabel(inputbatch, "\n\n\n\ninputbatch");
+    auto result1forbatch = L1.runInputBatch(inputbatch);
+    auto result1forbatchafteractivation = activation1.runInputBatch(result1forbatch);
+
+    auto result2forbatch = L2.runInputBatch(result1forbatchafteractivation);
+    auto result2forbatchafteractivation = activation2.runInputBatch(result2forbatch);
+    print::PrintVectorWithLabel(result2forbatchafteractivation, "\nresult2forbatchafteractivation");
+
+
+    LossFunction CategoricalCrossEntropy;
+    std::vector<int> trueValues;
+    /*
+    for(int i = 0 ; i<100; ++i)
+        trueValues.push_back(0);
+    */
+    trueValues = inputandoutput.second;
+    double loss = CategoricalCrossEntropy.calculate(result2forbatchafteractivation, trueValues);
+    std::cout<<"\n\nfinal loss = "<<loss;
+
+    int accu = findAccuracy(result2forbatchafteractivation, trueValues);
+    std::cout<<"\nfinal accu = "<<accu;
+
+    // auto data = math::dataset::GenerateSpiralData(3, 100);  // 3 classes, 100 points per class
+
+    // for (const auto& p : data) {
+    //     std::cout << p.x << ", " << p.y << " -> class " << p.label << '\n';
+    // }
     return 0;
 }

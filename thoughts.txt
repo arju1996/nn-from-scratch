@@ -1,3 +1,18 @@
 1. each nueron need no of input count of  weights and a bias
 
 2. 
+*.feels like relu is just a cut off, cant bias be enough for that?
+
+3
+*.softmax,
+rules = sum of probs 1, positive
+why not 5/5+10+15 rather than e5/e5+e10+e15 ?
+only to make it positive?,
+isnt it too much processing just for that requirement?
+why not just take mod?
+
+4
+*.
+why taking log for categorical cross entropy?
+ie why not just the negative of the result/prediction?
+

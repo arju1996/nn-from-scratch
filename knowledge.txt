@@ -6,3 +6,41 @@
 *. Dense Layer (Fully Connected Layer) == A type of layer 
 where every input is connected to every output neuron.
 
+*.np.sum(A, axis = 0) => seperate/cut via cols; and then sqeeze to a col
+ie if 4*2 => 2
+axis = 1 means row
+keepdims = true => 4*2 = > 2*1
+
+*.broadcasting rules didnt get the idea
+rule without understanding is this
+write dims of 2 arrays
+fine if , for all items
+1.dim is same
+2.dim is 1 or non existant
+ie 3*3 and 3 is fine but 3*3 and 2*3 is not
+//
+my confusion is this is being used in 
+np.dot(X, Wt) + B
+for this addition B will be expanded;, i dont aprove that, as i think output of batch 1 will be in 1 column;
+so if B is col matrix(3,1) as shown in lecture5, 11:58 then bias is adding wrongly to the results;
+
+*. np.max(A, axis =0) => max in col, ie its not cutting by row and finding max,
+its just plain max in row;
+0 = COL, 1 = ROW
+
+
+*. softmax on a inputbatch of 3*4
+np.exp(w - np.max(W, axis = 1, keepdims =1)) / np.sum(W, axis = 1, keepdims = 1)
+
+
+
+=============
+gradient is the vector of partial derivatives
+
+====
+strategy to improve nn
+1.randomly update w and b in every iteration, take the one with the smallest loss
+2.update w and b, if loss is is smaller, take next item from near that point,
+and update best to be that current point,
+if newly taken point is not giving better results, take another new point;
+https://www.youtube.com/watch?v=WVFMxpTD09w&t=501s
