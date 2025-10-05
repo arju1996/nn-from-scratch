@@ -11,3 +11,10 @@ src/nn/activation/ReLU.cc
 src/nn/activation/Softmax.cc
 src/nn/loss/LossFunction.cc
 )
+
+add_executable(
+    training
+    blackhole/main_test_gradient.cpp
+
+    src/nn/activation/ReLU.cc
+)

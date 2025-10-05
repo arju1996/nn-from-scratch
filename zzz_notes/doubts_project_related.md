@@ -23,3 +23,16 @@ ie why not just the negative of the result/prediction?
 
 6
 *. why scaling weights down?
+
+
+7
+*.
+https://youtu.be/wLLuNyZM8Sw?si=vkwrkiVrDajjGlyh&t=361 why taking loss of sum of nerons?
+ue why a1+a2+a3 ? its wrong in my opinion, 
+as then there is no importance in order of output from the nuerons
+
+8
+*.if we have batch of data, cant we use any additional information between the relation of these
+data in the batch to train it better?
+*.and wont the expected data be different for these guys?
+i mean in l = (y-0)^2

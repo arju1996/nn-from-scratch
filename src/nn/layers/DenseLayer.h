@@ -18,4 +18,9 @@ public:
     inline double VectorDotVector(std::vector<double> a, std::vector<double> b);
     std::vector<double> run(std::vector<double> input);
     std::vector<std::vector<double>> runInputBatch(std::vector<std::vector<double>> inputBatch);
+    void setWeights(std::vector<std::vector<double>> weights);
+    void setBias(std::vector<double> bias);
+    std::vector<std::vector<double>> getWeights();
+    std::vector<double> getBias();
+
 };

@@ -23,6 +23,20 @@ DenseLayer::DenseLayer(int input_size, int no_of_nodes) : input_size_(input_size
     bias_ = math::random::GetRandomNormVector(0, 1, no_of_nodes_);
 }
 
+
+void DenseLayer::setWeights(std::vector<std::vector<double>> weights) {
+    weights_ = weights;
+}
+void DenseLayer::setBias(std::vector<double> bias) {
+   bias_ = bias;
+}
+std::vector<std::vector<double>> DenseLayer::getWeights() {
+    return weights_;
+}
+std::vector<double> DenseLayer::getBias() {
+    return bias_;
+}
+
 void DenseLayer::PrintDenseLayer() {
     std::cout<<"hello this is the layer \n weights are \n";
     for(auto weight: weights_) {

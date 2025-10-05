@@ -146,6 +146,26 @@ class NN {
 // ways at which we create the layers can be improved, like it can be a matrix;
 
 int main() {
+    int inputsize = 3;
+    float bias = 2.0;
+    std::vector<float> weights = {0.1, 0.1, 0.1};
+    Node n {inputsize, bias, weights};
+
+    
+
+    /*
+    
+    w0 = w0 - learning * dL/dw0
+
+    need to find derivative of L with respect to each variables;
+    vars are w0, w
+    Loss = fn(wx + b) - expected value; 
+    
+    */
+    return 0;
+}
+
+int main2() {
      int inputsize = 4;
     int nodecount = 3;
     Layer l1 {
