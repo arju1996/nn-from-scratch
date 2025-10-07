@@ -18,3 +18,10 @@ add_executable(
 
     src/nn/activation/ReLU.cc
 )
+
+
+add_executable(
+    matrix 
+    src/matrix/test.cc 
+    src/matrix/Mat.h
+)

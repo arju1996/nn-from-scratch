@@ -81,4 +81,17 @@ std::vector<std::vector<double>> DenseLayer::runInputBatch(std::vector<std::vect
     return result;
 }
 
+void DenseLayer::backward(std::vector<double> dl_dz) {
+    // find dl_dw, dl_db, dl_dx
+
+    // std::vector<double> dl_dw = xt * dl_dz;
+    // std::vector<double> dl_db = dl_dz;
+    // std::vector<double> dl_dx = dl_dz * weights_;
+}
+
+void DenseLayer::backwardInputBatch(std::vector<std::vector<double>> dl_dz) {
+    // std::vector<double> dl_dw = xt * dl_dz;
+    // std::vector<double> dl_db = dl_dz; // raw sum, ie dl_db[i] = sum(dl_dz_tranpose[i])
+    // std::vector<double> dl_dx = dl_dz * weights_;
+}
 

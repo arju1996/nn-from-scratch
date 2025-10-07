@@ -23,3 +23,10 @@ https://youtu.be/cuveqaYX1bw?si=bQDCwGwZsz8HNo3m&t=1233
 ===
 take dL/dz is a row matrix,
 so for a batch size 3 , dL/dz = 3*4
+
+
+==
+i think its right time to create a Mat;
+
+add backward in relu,
+it needs dl_da as input; find dl_dz
