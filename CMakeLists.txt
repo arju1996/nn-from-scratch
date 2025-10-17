@@ -20,8 +20,9 @@ add_executable(
 )
 
 
-# add_executable(
-#     matrix 
-#     src/matrix/test.cc 
-#     src/matrix/Mat.h
-# )
+add_executable(
+    matrix 
+    src/matrix/Mat.h
+    src/matrix/Mat.cc
+    src/matrix/test.cc 
+)
