@@ -306,6 +306,77 @@ int findAccuracy(mynn::Mat y, mynn::Mat trueValues) {
     return correctCount*100/trueValues.size().rows;
 }
 
+void chapter22fullnnwithoptimizer() {
+    // GenerateSpiralData
+    // dataset
+    // std::vector<std::tuple<double, double, int>> data = math::dataset::GenerateSineDataV(3, 2, 0.2);
+    // std::vector<std::tuple<double, double, int>> data = math::dataset::GenerateSineDataV(3, 50, 0.2);
+    std::vector<std::tuple<double, double, int>> data = math::dataset::GenerateSpiralData(3, 100, 0.2);
+    // std::vector<std::tuple<double, double, int>> data = math::dataset::GenerateSpiralData(3, 5, 0.2);
+    std::pair< std::vector<std::vector<double>>, std::vector<double>> inputandoutput = 
+            spiltToInputAndOutputs(data);
+    auto inputbatch = inputandoutput.first;
+    auto trueValues = inputandoutput.second;
+    print::PrintVectorWithLabel(inputbatch, "\ninput");
+    print::PrintVectorWithLabel(trueValues, "\ntrueValues");
+    mynn::Mat input(inputbatch);
+    mynn::Mat groundTruth(trueValues);
+
+    groundTruth = groundTruth.transpose();
+
+    // create blocks
+    DenseLayer L1 {2, 64};
+    ReLU activation1;
+    DenseLayer L2 {64, 3};
+    A_Softmax_L_CatergoricalCrossEntropy lossactivation;
+    // OptimizerSGD optimizer(1, 0.001, true, 0.9, true);
+    // OptimizerADAGRAD optimizer(1, 1e-4, true, 1e-7);
+    // OptimizerRMSprop optimizer(0.02, 1e-5, true, 1e-7, 0.999);
+    OptimizerADAM optimizer(0.02, 1e-5, true, 1e-7, 0.9, 0.999); // he was using this
+    // OptimizerADAM optimizer(0.02, 1e-5, true, 1e-7, 0.99, 0.999); // but i got better result with this
+
+    // training
+    int count = 10000;
+    // count = 1000;
+    for(int i = 0 ; i < count; ++i) {
+        // forward
+        auto L1output = L1.forward(input);
+        auto activation1output = activation1.run(L1output);
+        auto L2output = L2.forward(activation1output);
+        auto lossactivationoutput__lose = lossactivation.forward(L2output, groundTruth);
+
+        if (i % 100 == 0) {
+            mynn::Mat lossCol = std::get<1>(lossactivationoutput__lose);
+            double acc = findAccuracy(std::get<0>(lossactivationoutput__lose), groundTruth);
+            std::cout<<"lose = "<<lossCol.meanof1d()<<"\t"<<", accu = "<<acc;
+            std::cout<<" lr = "<<optimizer.getCurrentLearningRate()<<"\n";
+        }
+
+
+        // backward
+        auto L2__dl_dz = lossactivation.backward(std::get<0>(lossactivationoutput__lose), groundTruth);
+        auto L2__tupl_dl_dw___dl_db___dl_dx = L2.backward(L2__dl_dz, activation1output);
+        auto L1__dl_dz = activation1.backward(std::get<2>(L2__tupl_dl_dw___dl_db___dl_dx), L1output);
+        auto L1__tupl_dl_dw___dl_db___dl_dx = L1.backward(L1__dl_dz, input);
+
+
+        // optimization
+        optimizer.preUpdateParams();
+        optimizer.updateParams(
+            L1,
+            std::get<0>(L1__tupl_dl_dw___dl_db___dl_dx),
+            std::get<1>(L1__tupl_dl_dw___dl_db___dl_dx)
+        );
+
+        optimizer.updateParams(
+            L2,
+            std::get<0>(L2__tupl_dl_dw___dl_db___dl_dx),
+            std::get<1>(L2__tupl_dl_dw___dl_db___dl_dx)
+        );
+        optimizer.postUpdateParams();
+    }
+
+}
 
 int main() {
     // inferenceAndAccuracy();
@@ -314,7 +385,9 @@ int main() {
     // findGradientOfInput();
 
     // chapter19();
-    chapter21fullnn();
+    // chapter21fullnn();
+    chapter22fullnnwithoptimizer();
+
 
 
 
