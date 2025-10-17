@@ -10,46 +10,60 @@
 
 DenseLayer::DenseLayer(int input_size, int no_of_nodes) : input_size_(input_size), no_of_nodes_(no_of_nodes) {
     // set random weight to each of the nodes (of size input_size);
+    
+    std::vector<std::vector<double>> weights;
+    std::vector<double> bias;
+
     for(int i = 0 ; i < no_of_nodes_; ++i) {
-        weights_.push_back(math::random::GetRandomNormVector(0, 1, input_size_));
+        weights.push_back(math::random::GetRandomNormVector(0, 1, input_size_));
         // scaling the weights down, i dont know why.
-        for(auto& item: weights_.back())
+        for(auto& item: weights.back())
             item /= 100;
     }
+
+    weights_ = mynn::Mat(weights);
 
     // set random bias for each nodes
     // in the original code this was set to 0, but lemme keep this as randoms to know why
     // they kept it as 0;
-    bias_ = math::random::GetRandomNormVector(0, 1, no_of_nodes_);
+    bias = math::random::GetRandomNormVector(0, 1, no_of_nodes_);
+    // bias_ = mynn::Mat( 1, no_of_nodes_, bias);
+    bias_ = mynn::Mat( 1, no_of_nodes_);
 }
 
 
-void DenseLayer::setWeights(std::vector<std::vector<double>> weights) {
+void DenseLayer::setWeights(mynn::Mat weights) {
     weights_ = weights;
 }
-void DenseLayer::setBias(std::vector<double> bias) {
+void DenseLayer::setBias(mynn::Mat bias) {
    bias_ = bias;
 }
-std::vector<std::vector<double>> DenseLayer::getWeights() {
+mynn::Mat DenseLayer::getWeights() {
     return weights_;
 }
-std::vector<double> DenseLayer::getBias() {
+mynn::Mat DenseLayer::getBias() {
     return bias_;
 }
 
 void DenseLayer::PrintDenseLayer() {
     std::cout<<"hello this is the layer \n weights are \n";
+    std::cout << weights_;
+    /*
     for(auto weight: weights_) {
         for(auto item: weight) {
             std::cout<<item<<" ";
         }
         std::cout<<"\n";
     }
+    */
     std::cout<<"\nbiases are\n";
+    std::cout << bias_;
+    /*
     for(auto item: bias_) {
         std::cout<<item<<" ";
     }
     std::cout<<"\n";
+    */
 }
 
 void DenseLayer::whatever(){}
@@ -67,8 +81,19 @@ std::vector<double> DenseLayer::run(std::vector<double> input) {
     // run the input on each nodes
     std::vector<double> result;
     for(int i = 0; i < no_of_nodes_; ++i) {
-        result.push_back(VectorDotVector(weights_.at(i), input) + bias_.at(i));
+        // result.push_back(VectorDotVector(weights_.at(i), input) + bias_.at(i));
     }
+    return result;
+}
+
+mynn::Mat DenseLayer::forward(mynn::Mat input) {
+    // mynn::Mat result = weights_ * input + bias_;
+    // mynn::Mat result = weights_.multiply(input) + bias_;
+    // mynn::Mat result = input.multiply(weights_) + bias_;
+    // mynn::Mat result = weights_.transpose().multiply(input) + bias_;
+    mynn::Mat result = input.multiply(weights_.transpose()) + bias_;
+
+
     return result;
 }
 
@@ -81,12 +106,31 @@ std::vector<std::vector<double>> DenseLayer::runInputBatch(std::vector<std::vect
     return result;
 }
 
-void DenseLayer::backward(std::vector<double> dl_dz) {
+std::tuple<mynn::Mat, mynn::Mat, mynn::Mat> DenseLayer::backward(mynn::Mat dl_dz, mynn::Mat input) {
     // find dl_dw, dl_db, dl_dx
 
     // std::vector<double> dl_dw = xt * dl_dz;
     // std::vector<double> dl_db = dl_dz;
     // std::vector<double> dl_dx = dl_dz * weights_;
+
+    // mynn::Mat input;
+    // assume input has values
+    mynn::Size inputsize = input.size();
+
+    mynn::Mat dl_dw = input.transpose().multiply(dl_dz);
+    mynn::Mat dl_db(1, dl_dz.size().cols);
+    // adds the dl_dz from each batch ie z11 + z21 + z31 (z of same neuron from each batch)
+    for(int i = 0,c = dl_dz.size().cols; i < c; ++i) {
+        double sum = 0;
+        for(int j = 0,r = dl_dz.size().rows; j < r; ++j) {
+            sum += dl_dz(j, i);
+        }
+        dl_db(0, i) = sum;
+    }
+    mynn::Mat dl_dx = dl_dz.multiply(weights_);
+
+    std::tuple<mynn::Mat, mynn::Mat, mynn::Mat> result = {dl_dw, dl_db, dl_dx};
+    return result;
 }
 
 void DenseLayer::backwardInputBatch(std::vector<std::vector<double>> dl_dz) {

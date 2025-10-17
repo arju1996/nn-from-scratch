@@ -1,9 +1,12 @@
 #include <vector>
 #include <cassert>
 
+#include "Mat.h"
+
+
 class ReLU {
 public:
     ReLU();
-    std::vector<double> run(std::vector<double> input);
-    std::vector<std::vector<double>> runInputBatch(std::vector<std::vector<double>> inputBatch);
+    mynn::Mat run(mynn::Mat input);
+    mynn::Mat backward(mynn::Mat dl_da, mynn::Mat input);
 };

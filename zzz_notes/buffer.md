@@ -30,3 +30,54 @@ i think its right time to create a Mat;
 
 add backward in relu,
 it needs dl_da as input; find dl_dz
+
+======
+======
+======
+pending:
+improve row(int i)
+adding begin and end might make it ready for stl
+understand ratio of learning rate and dl_dw, and may be keeping that ration in optimizer class side might be a better choice
+make optimizer defaults as 0;, ie to disable features
+
+objective meaning of loss
+
+below section feels like mess in the latest glossary
+mynn::Mat avoid allocatiions say implace adding and getweightref etc
+
+===
+
+ think without decay i got better accuracy:
+but with decay there is no fluctuation
+
+
+<=====================>
+
+design decisions made.
+
+1d matrixes are usually row matrix
+made layers mostly stateless
+so had to make optimizer stateful
+
+<========>
+
+1.think if keeping a default constructor could cause issues to any logic
+any why all member variables has to be initialized in constructor?
+
+2. lets follow the concept followed in video
+
+input in single row;
+weight of a neuron in single row;
+
+===
+how does relu backward gets the input?,
+same problem is there in all backwards;
+
+== 
+loss doesnt have to have forward, calculate is better name ig
+
+
+<=====>
+
+denseLayer
+create a random value matrix

@@ -1,6 +1,12 @@
+#pragma once
+
+
 #include <vector>
 #include <cassert>
 #include <cmath>
+
+#include "Mat.h"
+
 
 // this usually is called on batch
 class CategoricalCrossEntropy {
@@ -38,5 +44,18 @@ class LossFunction: public CategoricalCrossEntropy {
     double calculate(
         std::vector<std::vector<double>> output,
         std::vector<int> y
+    );
+};
+
+class CategoricalCrossEntropyL {
+    public:
+    mynn::Mat forward(mynn::Mat predicted, mynn::Mat trueValues);
+    void backward(mynn::Mat predicted, mynn::Mat trueValues);
+
+    void clip(double &x, double lower, double upper);
+    void clip(
+        mynn::Mat& data,
+        double lower,
+        double upper
     );
 };

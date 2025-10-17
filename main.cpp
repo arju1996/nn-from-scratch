@@ -22,9 +22,9 @@ int findAccuracy(std::vector<std::vector<double>> y, std::vector<int> trueValues
     return correctCount*100/trueValues.size();
 }
 
-std::pair< std::vector<std::vector<double>>, std::vector<int>> spiltToInputAndOutputs(std::vector<std::tuple<double, double, int>> data) {
+std::pair< std::vector<std::vector<double>>, std::vector<double>> spiltToInputAndOutputs(std::vector<std::tuple<double, double, int>> data) {
     std::vector<std::vector<double>> inputs;
-    std::vector<int> outputs;
+    std::vector<double> outputs;
     for(auto item: data) {
         inputs.push_back(
             {
@@ -38,8 +38,8 @@ std::pair< std::vector<std::vector<double>>, std::vector<int>> spiltToInputAndOu
 }
 
 int inferenceAndAccuracy() {
-    int inputsize = 2;
-    int nodecount = 2;
+    int inputsize = 4;
+    int nodecount = 3;
     /*
     create a Layer,
     1. give no of inputs, no of nodes
@@ -48,86 +48,58 @@ int inferenceAndAccuracy() {
     DenseLayer L1 {inputsize, nodecount};
     L1.PrintDenseLayer();
     ReLU activation1;
-    DenseLayer L2 {2, 3};
-    Softmax activation2;
 
 
 
 
-    std::vector<double> input = {1, 2};
-    print::PrintVectorWithLabel(input, "\ninput");
-    std::vector<double> result1 = L1.run(input);
-    print::PrintVectorWithLabel(result1, "\nresult1");
-    std::vector<double> result1afteractivation = activation1.run(result1);
-    print::PrintVectorWithLabel(result1afteractivation, "\nresult1afteractivation");
+    std::vector<double> inpu = {1, 2, 3, 4};
+    mynn::Mat input = mynn::Mat(1, 4, inpu);
+    // print::PrintVectorWithLabel(input, "\ninput");
+    std::cout<<"input = \n"<<input<<"\n";
+    mynn::Mat result1 = L1.forward(input);
+    std::cout<<"result1 = \n"<<result1<<"\n";
+    auto result2 = activation1.run(result1);
+    std::cout<<"result2 = \n"<<result1<<"\n";
 
-    std::vector<double> result2 = L2.run(result1afteractivation);
-    print::PrintVectorWithLabel(result2, "\nresult2");
-    std::vector<double> result2afteractivation = activation2.run(result2);
-    print::PrintVectorWithLabel(result2afteractivation, "\nresult2afteractivation");
+
+    std::vector<std::vector<double>> inputbatch = {{1, 2, 3, 4}, {5, 6, 7, 8}};
+    mynn::Mat input2 = mynn::Mat(inputbatch);
+
+    std::cout<<"input = \n"<<input2<<"\n";
+    auto result1forbatch = L1.forward(input2);
+    std::cout<<"result1 batch \n= "<<result1forbatch<<"\n";
+    auto result2forbatch = activation1.run(result1forbatch);
+    std::cout<<"result2 batch \n= "<<result2forbatch<<"\n";
+
     
-    /*
-    std::vector<std::vector<double>> inputbatch = math::dataset::GenerateLinearDataV(2, 50, 0.2);
-    */
-    std::vector<std::tuple<double, double, int>> data = math::dataset::GenerateSineDataV(3, 50, 0.2);
-    std::pair< std::vector<std::vector<double>>, std::vector<int>> inputandoutput = 
-            spiltToInputAndOutputs(data);
-    
-
-    auto inputbatch = inputandoutput.first;
-
-    print::PrintVectorWithLabel(inputbatch, "\n\n\n\ninputbatch");
-    auto result1forbatch = L1.runInputBatch(inputbatch);
-    auto result1forbatchafteractivation = activation1.runInputBatch(result1forbatch);
-
-    auto result2forbatch = L2.runInputBatch(result1forbatchafteractivation);
-    auto result2forbatchafteractivation = activation2.runInputBatch(result2forbatch);
-    print::PrintVectorWithLabel(result2forbatchafteractivation, "\nresult2forbatchafteractivation");
-
-
-    LossFunction CategoricalCrossEntropy;
-    std::vector<int> trueValues;
-    /*
-    for(int i = 0 ; i<100; ++i)
-        trueValues.push_back(0);
-    */
-    trueValues = inputandoutput.second;
-    double loss = CategoricalCrossEntropy.calculate(result2forbatchafteractivation, trueValues);
-    std::cout<<"\n\nfinal loss = "<<loss;
-
-    int accu = findAccuracy(result2forbatchafteractivation, trueValues);
-    std::cout<<"\nfinal accu = "<<accu;
-
-    // auto data = math::dataset::GenerateSpiralData(3, 100);  // 3 classes, 100 points per class
-
-    // for (const auto& p : data) {
-    //     std::cout << p.x << ", " << p.y << " -> class " << p.label << '\n';
-    // }
     return 0;
 }
 
+
+//
 
 int trainingForSingleLayerOneBatch() {
     int inputsize = 4;
     int nodecount = 3;
 
     DenseLayer L1 {inputsize, nodecount};
-    L1.setWeights({{0.1, 0.2, 0.3, 0.4} , {0.5, 0.6, 0.7, 0.8}, {0.9, 1.0, 1.1, 1.2}});
-    L1.setBias({0.1, 0.2, 0.3});
+    L1.setWeights(mynn::Mat({{0.1, 0.2, 0.3, 0.4} , {0.5, 0.6, 0.7, 0.8}, {0.9, 1.0, 1.1, 1.2}}));
+    L1.setBias(mynn::Mat({0.1, 0.2, 0.3}));
     ReLU activation1;
 
     std::vector<double> input = {1.0, 2.0, 3.0, 4.0};
-    std::vector<double> result = L1.run(input);
-    std::vector<double> resultafteractivation = activation1.run(result);
+    auto result = L1.forward(mynn::Mat(input));
+    // std::vector<double> resultafteractivation = activation1.run(result);
 
     print::PrintVectorWithLabel(input, "\ninput");
-    print::PrintVectorWithLabel(result, "\nresult");
-    print::PrintVectorWithLabel(resultafteractivation, "\nresultafteractivation");
+    // print::PrintVectorWithLabel(result, "\nresult");
+    std::cout<<"result1 \n= "<<result<<"\n";
+    // print::PrintVectorWithLabel(resultafteractivation, "\nresultafteractivation");
 
-        double sum = 0;
-        for  (auto item: resultafteractivation)
-        sum += item;
-        std::cout <<" loss = "<<sum * sum <<"\n";
+        // double sum = 0;
+        // for  (auto item: resultafteractivation)
+        // sum += item;
+        // std::cout <<" loss = "<<sum * sum <<"\n";
 
     /*
     connections
@@ -201,314 +173,149 @@ int trainingForSingleLayerOneBatch() {
 
         
         auto weight = L1.getWeights();
-        print::PrintVectorWithLabel(weight, "\nweight");
+        // print::PrintVectorWithLabel(weight, "\nweight");
+        std::cout<<"weight = \n" << weight;
         
         // dl/dw is a matrix of 4 * 3;
         // weight is of 3 * 4
         // w11 = w11 - learning_rate * dl_dw11;
         for(int i = 0; i<inputsize; ++i) {
             for (int j = 0; j < nodecount; ++j) {
-                weight[j][i] = weight[j][i] - learning_rate * dl_dw[i][j];
+                weight(j, i) = weight(j, i) - learning_rate * dl_dw[i][j];
             }
         }
         L1.setWeights(weight);
 
         auto bias = L1.getBias();
         for (int j = 0; j < nodecount; ++j) {
-            bias[j] = bias[j] - learning_rate * dl_dz[j];
+            bias(0, j) = bias(0, j) - learning_rate * dl_dz[j];
         }
         L1.setBias(bias);
 
 
         std::vector<double> input = {1.0, 2.0, 3.0, 4.0};
-        std::vector<double> result = L1.run(input);
-        std::vector<double> resultafteractivation = activation1.run(result);
-        double sum = 0;
-        for  (auto item: resultafteractivation)
-        sum += item;
-        std::cout <<" loss = "<<sum * sum << " after "<<iter<<"th iteration\n";
+        auto result = L1.forward(mynn::Mat(input));
+        // std::vector<double> resultafteractivation = activation1.run(result);
+        // double sum = 0;
+        // for  (auto item: resultafteractivation)
+        // sum += item;
+        // std::cout <<" loss = "<<sum * sum << " after "<<iter<<"th iteration\n";
     }
 
     return 0;
 }
 
-
-std::vector<std::vector<double>> transpose(std::vector<std::vector<double>> matrix) {
-   int rows = matrix.size();
-   int cols = matrix.at(0).size();
-
-   std::vector<std::vector<double>> transpose (cols, std::vector<double>(rows));
-
-   for(int i = 0; i<rows; ++i) {
-        for(int j = 0; j<cols; ++j) {
-            transpose[j][i] = matrix[i][j]; 
-        }
-   }
-    return transpose;
-}
-
-double dot(std::vector<double> &a, std::vector<double> &b) {
-    assert(a.size() == b.size());
-    double result = 0;
-    for(int i = 0; i < a.size(); ++i) {
-        result = result + (a[i] * b[i]);
-    }
-    return result;
-}
-
-double sum(std::vector<double> &a) {
-    double result = 0;
-    for(int i = 0; i < a.size(); ++i) {
-        result +=  a[i];
-    }
-    return result;
-}
-
-std::vector<std::vector<double>> multiply(std::vector<std::vector<double>> matrixA, std::vector<std::vector<double>> matrixB) {
-    int matrixArows = matrixA.size();
-    int matrixAcols = matrixA.at(0).size();
-    int matrixBrows = matrixB.size();
-    int matrixBcols = matrixB.at(0).size();
-
-    auto matrixBtranspose = transpose(matrixB);
-
-    assert(matrixAcols == matrixBrows);
-   std::vector<std::vector<double>> result (matrixArows, std::vector<double>(matrixBcols));
-
-    for(int i = 0; i<matrixArows; ++i) {
-        for(int j = 0; j<matrixBcols; ++j) {
-            // transpose[j][i] = matrix[i][j]; 
-            result[i][j] = dot(matrixA[i], matrixBtranspose[j]);
-        }
-   }
-   return result;
-}
-
-
-int trainingForSingleLaterMultipleBatch() {
-    int inputsize = 4;
-    int nodecount = 3;
-    int batchsize = 3;
-
-    DenseLayer L1 {inputsize, nodecount};
-    L1.setWeights({{0.1, 0.2, 0.3, 0.4} , {0.5, 0.6, 0.7, 0.8}, {0.9, 1.0, 1.1, 1.2}});
-    L1.setBias({0.1, 0.2, 0.3});
+void chapter19() {
+    // int inputsize = 4;
+    // int nodecount = 3;
+    /*
+    create a Layer,
+    1. give no of inputs, no of nodes
+    2. initialize random weights and biases;
+    */
+    // DenseLayer L1 {inputsize, nodecount};
+    // L1.PrintDenseLayer();
     ReLU activation1;
 
-    std::vector<std::vector<double>> input = {
-        {1.0, 2.0, 3.0, 2.5},
-        {2.0, 5.0, -1.0, 2.0},
-        {-1.5, 2.7, 3.3, -0.8}
-    };
-    
-    assert(input.size() == batchsize);
+    A_Softmax_L_CatergoricalCrossEntropy S_CCE;
+    mynn::Mat softmax_output({{0.7, 0.1, 0.2} , {0.1, 0.5, 0.4}, {0.02, 0.9, 0.08}});
+    mynn::Mat class_targets({0, 1, 1});
+    auto loss = S_CCE.backward(softmax_output, class_targets);
 
-    std::vector<std::vector<double>> result = L1.runInputBatch(input);
-    std::vector<std::vector<double>> resultafteractivation = activation1.runInputBatch(result);
-
-    print::PrintVectorWithLabel(input, "\ninput");
-    print::PrintVectorWithLabel(result, "\nresult");
-    print::PrintVectorWithLabel(resultafteractivation, "\nresultafteractivation");
-
-    for (auto perbatchresult : resultafteractivation) {
-        double sum = 0;
-        for  (auto item: perbatchresult)
-        sum += item;
-        std::cout <<" loss = "<<sum * sum <<"\n";
-    }
-
-    /*
-    connections
-    L = (y)^2; y = a1 + a2 + a3;
-    a1 = relu(z1)
-    z1 = w11x1 + w12x2+ w13x3 + w13x3 + b1;
-    but there will be z11, z12, z13 (ie z1, z2, z3 of batch1 data)
-    */
-
-    /*
-    values
-    */
-
-    /*
-    variables
-    dL_dw11 = dl1_dw11 + dl2_dw11 + dl3_dw11
-    but dl1_dw11 = dl1_dz11 * dz11_d11
-    so dL_dw11 = (dl1_dz11 * dz11_dw11) + (dl2_dz21 * dz21_dw11) + (dl3_dz31 * dz31_dw11)
-               = dl1_dz11 * x11 + dl2_dz21 * x21 + dl3_dz31 * x31
-    
-    so similiarly
-    dl_dw12 means first neurons second data
-    dl_dw12 = dl1_dz11 * dz11_dw12 + dl2_dz21 * dz21_dw12 + dl3_dz31 * dz31_dw12
-            = dl1_dz11 * x12 + dl2_dz21 * x22 + dl3_dz31 * x32
-
-    and
-    dl_dw13 = dl1_dz11 * dz11_dw13 + dl2_dz21 * dz21_dw13 + dl3_dz31 * dz31_dw13
-            = dl1_dz11 * x13 + dl2_dz21 * x23 + dl3_dz31 * x33
-    
-    dl_dw23 = dl1_dz12 * dz12_dw23 + dl2_dz22 * dz22_dw23 + dl3_dz32 * dz32_dw23
-            = dl1_dz12 * x13 + dl2_dz22 * x23 + dl3_dz32 * x33
-
-    dl_db = dl1_dz11 + dl2_dz21 +dl3_dz31 
-
-    xT * dl_dz = ?;
-    dl_dw = xT * dl_dz 
-    ==========
-    below are some code that has to be cleaned up
-    {
-                    dL_dw11 = dL_dy * dy_drelu * drelu_dz1 * dz1_dw11
-                    dl_dy = 2y;
-                    dy_drelu = 1;
-                    drelu_dz1 = 1 when z1 is postive, 0 when z1 is negative
-
-                    so dl_dz1 = 2y * 1 when x1 is positive else 0;
-                    dz1_dw11 = x1;
-
-                    dl_dw11 = dl_dz1 * dz1_dw11;
-                    **** dl/dw =  Xt * dl_dz ****
-
-                    dL_db1 = dL_dy * dy_drelu() * drelu()_dz1 
-                    dl_db1 =  dl_dz
-                    **** dl_db =  dl_dz ****
-    }
-    */
-
-    int iterations = 180;
-    iterations = 1;
-    double learning_rate = 0.001;
-
-    for(int iter = 0; iter < iterations; ++iter) {
-        std::vector<std::vector<double>> z = L1.runInputBatch(input);
-        std::vector<std::vector<double>> relu = activation1.runInputBatch(z);
-        
-        // find dl_dz
-        std::vector<std::vector<double>> dl_dz;
-        for(int i=0; i< batchsize; ++i) {
-            
-            auto reluPerBatch = relu[i];
-            double y = 0;
-            for(auto item: reluPerBatch)
-                y += item;
-            std::vector<double> relu_deri;
-            for(auto item: reluPerBatch) {
-                relu_deri.push_back(item>0);
-            }
-
-            // find dl_dz; 2y * 1 *  z1
-            std::vector<double> dl_dz_perbatch;
-            for(auto item: relu_deri) {
-                dl_dz_perbatch.push_back(2 * y * item);
-            }
-            dl_dz.push_back(dl_dz_perbatch);
-        }
-        
-
-        // dl_dz = {{1, 1, 1}, {2,2,2}, {3,3,3}};
-        
-        // dl_dw = xT * dl_dz;
-        std::vector<std::vector<double>> dl_dw = multiply(transpose(input), dl_dz);
-        print::PrintVectorWithLabel(dl_dz, "\ndl_dz");
-        print::PrintVectorWithLabel(dl_dw, "\ndl_dw");
-
-        // dl_db1 = dl1_dz11 + dl2_dz21 +dl3_dz31 
-        std::vector<double> dl_db;
-        auto dl_dz_tranpose = transpose(dl_dz);
-        for (int i=0; i<dl_dz_tranpose.size(); ++i) {
-            // summing throw columns;, like basic table adding and putting sum at bottom;
-            dl_db.push_back(sum(dl_dz_tranpose[i]));
-        }
-        print::PrintVectorWithLabel(dl_db, "\ndl_db");
-
-
-        auto weight = L1.getWeights();
-        print::PrintVectorWithLabel(weight, "\nweight");
-
-        for(int i = 0; i<inputsize; ++i) {
-            for (int j = 0; j < nodecount; ++j) {
-                weight[j][i] = weight[j][i] - learning_rate * dl_dw[i][j];
-            }
-        }
-        L1.setWeights(weight);
-
-        auto bias = L1.getBias();
-        for (int j = 0; j < nodecount; ++j) {
-            bias[j] = bias[j] - learning_rate * dl_db[j];
-        }
-        L1.setBias(bias);
-
-        // lose finding
-        std::vector<std::vector<double>> result = L1.runInputBatch(input);
-        std::vector<std::vector<double>> resultafteractivation = activation1.runInputBatch(result);
-
-        print::PrintVectorWithLabel(input, "\ninput");
-        print::PrintVectorWithLabel(result, "\nresult");
-        print::PrintVectorWithLabel(resultafteractivation, "\nresultafteractivation");
-
-        for (auto perbatchresult : resultafteractivation) {
-            double sum = 0;
-            for  (auto item: perbatchresult)
-            sum += item;
-            std::cout <<" loss = "<<sum * sum <<"\n";
-        }
-    }
-
-
-    return 0;
+    std::cout<<"final result = "<<loss<<"\n";
 }
 
-int findGradientOfInput() {
+void chapter21fullnn() {
+    std::vector<std::tuple<double, double, int>> data = math::dataset::GenerateSineDataV(3, 2, 0.2);
+    std::pair< std::vector<std::vector<double>>, std::vector<double>> inputandoutput = 
+            spiltToInputAndOutputs(data);
+    auto inputbatch = inputandoutput.first;
+    auto trueValues = inputandoutput.second;
+    print::PrintVectorWithLabel(inputbatch, "\ninput");
+    print::PrintVectorWithLabel(trueValues, "\ntrueValues");
 
-    // find dL_dx1
+    mynn::Mat input(inputbatch);
+    mynn::Mat groundTruth(trueValues);
 
-    /*
-    connections
-    L = (y)^2; y = a1 + a2 + a3;
-    a1 = relu(z1)
-    z1 = w11x1 + w12x2+ w13x3 + w13x3 + b1;
-    but there will be z11, z12, z13 (ie z1, z2, z3 of batch1 data)
-    */
+    groundTruth = groundTruth.transpose();
 
-    /*
-    values
-    */
 
-    /*
-    variables
-    dL_dx1 = dl_dz1 * dz1_dx1 + dl_dz2 * dz2_dx1 + dl_dz3 * dz3_dx1
-           = dl_dz1 * w11 + dl_dz2 * w21 + dl_dz3 * w31
-           = 2*y*{1 when z1 is +ve}  + 2y{1 when z2 is +ve} * w21 + 2y{1 when z3 is +ve} * w31
-    dl_dx2 = dl_dz1 * dz1_dx2 + dl_dz2 * dz2_dx2 + dl_dz3 * dz3_dx2
-           = dl_dz1 * w12 + dl_dz2 * w22 + dl_dz3 * w32
     
-    dl_dz1 * dz1_dx1 = dl_dy * dy_dz1 * dz1_dx1 = 2y * {1 when z1 is +ve} * dz1_dx1;
+    // create the blocks
+    int L1inputsize = 2;
+    int L1nodecount = 3;
 
-    ie
-    dl_dx = dl_dz * wT (or w, based on how initial w is stored); 1*3 x 3*4 = 1*4
-    same is valid for batch as well;
-    */
+    int L2inputsize = 3;
+    int L2nodecount = 3;
 
-    // testing
-    int inputsize = 4;
-    int nodecount = 3;
-    int batchsize = 3;
-    DenseLayer L1 {inputsize, nodecount};
-    std::vector<std::vector<double>> w;
-    w =  {{0.2, 0.8, -0.5, 1.0} , {0.5, -0.91, 0.26, -0.5}, {-0.26, -0.27, 0.17, 0.87}};
-    // w = transpose(w);
-    L1.setWeights(w);
-    L1.setBias({0.1, 0.2, 0.3});
-    std::vector<std::vector<double>> dl_dz;
-    dl_dz = {{1, 1, 1}, {2,2,2}, {3,3,3}};
-    std::vector<std::vector<double>> dl_dx;
-    dl_dx = multiply(dl_dz, L1.getWeights());
-    print::PrintVectorWithLabel(dl_dx, "\ndl_dx");
+    DenseLayer L1 {L1inputsize, L1nodecount};
+    ReLU activation1;
+    DenseLayer L2 {L2inputsize, L2nodecount};
+    A_Softmax_L_CatergoricalCrossEntropy lossactivation;
+
+    L1.PrintDenseLayer();
+    L2.PrintDenseLayer();
+
+    // forward
+    auto L1output = L1.forward(input);
+    std::cout<<"L1output = "<<L1output<<"\n";
+
+    auto activation1output = activation1.run(L1output);
+    std::cout<<"activation1output = "<<activation1output<<"\n";
+
+    auto L2output = L2.forward(activation1output);
+    auto lossactivationoutput__lose = lossactivation.forward(L2output, groundTruth);
+
+    std::cout<<"lossactivationoutput = "<<std::get<0>(lossactivationoutput__lose)<<"\n";
+    std::cout<<"lose = "<<std::get<1>(lossactivationoutput__lose)<<"\n";
+
+    
+    // backward
+    auto L2__dl_dz = lossactivation.backward(std::get<0>(lossactivationoutput__lose), groundTruth);
+    auto L2__tupl_dl_dw___dl_db___dl_dx = L2.backward(L2__dl_dz, activation1output);
+    auto L1__dl_dz = activation1.backward(std::get<2>(L2__tupl_dl_dw___dl_db___dl_dx), L1output);
+    auto L1__tupl_dl_dw___dl_db___dl_dx = L1.backward(L1__dl_dz, input);
 
 
-    return 0;
+    std::cout<<"L1 weights deri = "<<std::get<0>(L1__tupl_dl_dw___dl_db___dl_dx)<<"\n";
+    std::cout<<"L1 bias deri = "<<std::get<1>(L1__tupl_dl_dw___dl_db___dl_dx)<<"\n";
+    std::cout<<"L1 input deri = "<<std::get<2>(L1__tupl_dl_dw___dl_db___dl_dx)<<"\n";
+
+    std::cout<<"L2 weights deri = "<<std::get<0>(L2__tupl_dl_dw___dl_db___dl_dx)<<"\n";
+    std::cout<<"L2 bias deri = "<<std::get<1>(L2__tupl_dl_dw___dl_db___dl_dx)<<"\n";
+    std::cout<<"L2 input deri = "<<std::get<2>(L2__tupl_dl_dw___dl_db___dl_dx)<<"\n";
+
 }
+
+// int findAccuracy(std::vector<std::vector<double>> y, std::vector<int> trueValues) {
+int findAccuracy(mynn::Mat y, mynn::Mat trueValues) {
+    int correctCount = 0;
+    for(int i = 0 ; i < y.size().rows; ++i) {
+        std::pair<double, int> maxValue_Index = {0.0, -1};
+        for (int j = 0; j <y.size().cols; ++j) {
+            if(y(i, j) > maxValue_Index.first) {
+                maxValue_Index.first = y(i, j);
+                maxValue_Index.second = j;
+            }
+        }
+        if(maxValue_Index.second == trueValues(i, 0))
+            correctCount ++;
+    }
+
+    std::cout <<"correctCount = "<<correctCount<<" ";
+    return correctCount*100/trueValues.size().rows;
+}
+
 
 int main() {
     // inferenceAndAccuracy();
     // trainingForSingleLayerOneBatch();
     // trainingForSingleLaterMultipleBatch();
-    findGradientOfInput();
+    // findGradientOfInput();
+
+    // chapter19();
+    chapter21fullnn();
+
+
+
 }
