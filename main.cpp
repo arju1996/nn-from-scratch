@@ -8,6 +8,9 @@
 
 #include <nn.h>
 
+#include <fstream>
+
+
 int findAccuracy(std::vector<std::vector<double>> y, std::vector<int> trueValues) {
     int correctCount = 0;
     for(int i = 0 ; i < y.size(); ++i) {
@@ -377,6 +380,21 @@ void chapter22fullnnwithoptimizer() {
     }
 
 }
+void generateSpiralCSV() {
+    auto data = math::dataset::GenerateSpiralData(3, 100);  // 3 classes, 100 points each
+
+    std::ofstream out("spiral_data.csv");
+    out << "x,y,class\n";  // header
+
+    for (size_t i = 0; i < data.size(); ++i) {
+        double x = std::get<0>(data[i]);
+        double y = std::get<1>(data[i]);
+        int c    = std::get<2>(data[i]);
+        out << x << "," << y << "," << c << "\n";
+    }
+
+    out.close();
+}
 
 int main() {
     // inferenceAndAccuracy();
@@ -386,8 +404,9 @@ int main() {
 
     // chapter19();
     // chapter21fullnn();
-    chapter22fullnnwithoptimizer();
+    // chapter22fullnnwithoptimizer();
 
+    generateSpiralCSV();
 
 
 
