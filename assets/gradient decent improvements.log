@@ -1,0 +1,38 @@
+without any momentum:
+correctCount = 216 lose = 0.673151      , accu = 72 lr = 0.0961631
+correctCount = 217 lose = 0.671227      , accu = 72 lr = 0.0952472
+correctCount = 217 lose = 0.668711      , accu = 72 lr = 0.0943485
+correctCount = 218 lose = 0.666054      , accu = 72 lr = 0.0934667
+correctCount = 218 lose = 0.663788      , accu = 72 lr = 0.0926012
+correctCount = 219 lose = 0.661591      , accu = 73 lr = 0.0917515
+
+
+with 0.5 momentum
+
+correctCount = 259 lose = 0.391033      , accu = 86 lr = 0.0970968
+correctCount = 261 lose = 0.387462      , accu = 87 lr = 0.0961631
+correctCount = 262 lose = 0.383928      , accu = 87 lr = 0.0952472
+correctCount = 265 lose = 0.380849      , accu = 88 lr = 0.0943485
+correctCount = 264 lose = 0.376814      , accu = 88 lr = 0.0934667
+correctCount = 263 lose = 0.373018      , accu = 87 lr = 0.0926012
+correctCount = 261 lose = 0.370526      , accu = 87 lr = 0.0917515
+
+with 0.9 momentum
+
+correctCount = 277 lose = 0.166966      , accu = 92 lr = 0.0980488
+correctCount = 277 lose = 0.166773      , accu = 92 lr = 0.0970968
+correctCount = 277 lose = 0.166553      , accu = 92 lr = 0.0961631
+correctCount = 277 lose = 0.166352      , accu = 92 lr = 0.0952472
+correctCount = 277 lose = 0.166144      , accu = 92 lr = 0.0943485
+correctCount = 277 lose = 0.165966      , accu = 92 lr = 0.0934667
+correctCount = 277 lose = 0.165774      , accu = 92 lr = 0.0926012
+correctCount = 277 lose = 0.165573      , accu = 92 lr = 0.0917515
+
+adagrad
+correctCount = 252 lose = 0.355515      , accu = 84 lr = 0.518162
+correctCount = 252 lose = 0.354679      , accu = 84 lr = 0.51549
+correctCount = 252 lose = 0.353941      , accu = 84 lr = 0.512847
+correctCount = 252 lose = 0.353092      , accu = 84 lr = 0.51023
+correctCount = 252 lose = 0.352338      , accu = 84 lr = 0.50764
+correctCount = 252 lose = 0.351655      , accu = 84 lr = 0.505076
+correctCount = 252 lose = 0.350879      , accu = 84 lr = 0.502538
