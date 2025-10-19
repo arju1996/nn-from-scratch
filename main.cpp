@@ -314,29 +314,31 @@ void chapter22fullnnwithoptimizer() {
     // dataset
     // std::vector<std::tuple<double, double, int>> data = math::dataset::GenerateSineDataV(3, 2, 0.2);
     // std::vector<std::tuple<double, double, int>> data = math::dataset::GenerateSineDataV(3, 50, 0.2);
-    std::vector<std::tuple<double, double, int>> data = math::dataset::GenerateSpiralData(3, 100, 0.2);
+    std::vector<std::tuple<double, double, int>> data = math::dataset::GenerateSpiralData(3, 1000, 0.2);
     // std::vector<std::tuple<double, double, int>> data = math::dataset::GenerateSpiralData(3, 5, 0.2);
     std::pair< std::vector<std::vector<double>>, std::vector<double>> inputandoutput = 
             spiltToInputAndOutputs(data);
     auto inputbatch = inputandoutput.first;
     auto trueValues = inputandoutput.second;
-    print::PrintVectorWithLabel(inputbatch, "\ninput");
-    print::PrintVectorWithLabel(trueValues, "\ntrueValues");
+    // print::PrintVectorWithLabel(inputbatch, "\ninput");
+    // print::PrintVectorWithLabel(trueValues, "\ntrueValues");
     mynn::Mat input(inputbatch);
     mynn::Mat groundTruth(trueValues);
 
     groundTruth = groundTruth.transpose();
 
     // create blocks
-    DenseLayer L1 {2, 64};
+    // DenseLayer L1 {2, 64};
+    DenseLayer L1 {2, 64, 0, 0, 5e-4, 5e-4};
     ReLU activation1;
     DenseLayer L2 {64, 3};
     A_Softmax_L_CatergoricalCrossEntropy lossactivation;
     // OptimizerSGD optimizer(1, 0.001, true, 0.9, true);
     // OptimizerADAGRAD optimizer(1, 1e-4, true, 1e-7);
     // OptimizerRMSprop optimizer(0.02, 1e-5, true, 1e-7, 0.999);
-    OptimizerADAM optimizer(0.02, 1e-5, true, 1e-7, 0.9, 0.999); // he was using this
+    // OptimizerADAM optimizer(0.02, 1e-5, true, 1e-7, 0.9, 0.999); // he was using this
     // OptimizerADAM optimizer(0.02, 1e-5, true, 1e-7, 0.99, 0.999); // but i got better result with this
+    OptimizerADAM optimizer(0.02, 5e-7, true, 1e-7, 0.9, 0.999); // he was using this
 
     // training
     int count = 10000;
@@ -351,7 +353,9 @@ void chapter22fullnnwithoptimizer() {
         if (i % 100 == 0) {
             mynn::Mat lossCol = std::get<1>(lossactivationoutput__lose);
             double acc = findAccuracy(std::get<0>(lossactivationoutput__lose), groundTruth);
-            std::cout<<"lose = "<<lossCol.meanof1d()<<"\t"<<", accu = "<<acc;
+            double reguloss = lossactivation.regularizationLoss(&L1) + lossactivation.regularizationLoss(&L2);
+            std::cout<<"lose = "<<lossCol.meanof1d()<<"\t";
+            std::cout<<"reg loss = "<<reguloss<<" total loss = "<<(lossCol.meanof1d() + reguloss)<<", accu = "<<acc;
             std::cout<<" lr = "<<optimizer.getCurrentLearningRate()<<"\n";
         }
 
@@ -379,6 +383,33 @@ void chapter22fullnnwithoptimizer() {
         optimizer.postUpdateParams();
     }
 
+    std::cout<<"testing"<<"\n";
+    // testModel();
+    // pass L1, L2, ReLU, softmax+cce
+    // or pass just the L1 and L2
+
+    auto testindata = math::dataset::GenerateTestingSpiralData(3, 100, 0.2);
+    std::pair< std::vector<std::vector<double>>, std::vector<double>> testinginputandoutput = 
+            spiltToInputAndOutputs(testindata);
+    auto testinginputbatch = testinginputandoutput.first;
+    auto testingtrueValues = testinginputandoutput.second;
+    // print::PrintVectorWithLabel(testinginputbatch, "\ninput");
+    // print::PrintVectorWithLabel(testingtrueValues, "\ntrueValues");
+    mynn::Mat testinginput(testinginputbatch);
+    mynn::Mat testinggroundTruth(testingtrueValues);
+
+    testinggroundTruth = testinggroundTruth.transpose();
+
+    auto testL1output = L1.forward(testinginput);
+    auto testactivation1output = activation1.run(testL1output);
+    auto testL2output = L2.forward(testactivation1output);
+    auto testlossactivationoutput__lose = lossactivation.forward(testL2output, testinggroundTruth);
+
+        mynn::Mat testlossCol = std::get<1>(testlossactivationoutput__lose);
+        double testacc = findAccuracy(std::get<0>(testlossactivationoutput__lose), testinggroundTruth);
+        std::cout<<"lose = "<<testlossCol.meanof1d()<<"\t"<<", accu = "<<testacc;
+        std::cout<<" lr = "<<optimizer.getCurrentLearningRate()<<"\n";
+
 }
 void generateSpiralCSV() {
     auto data = math::dataset::GenerateSpiralData(3, 100);  // 3 classes, 100 points each
@@ -404,9 +435,9 @@ int main() {
 
     // chapter19();
     // chapter21fullnn();
-    // chapter22fullnnwithoptimizer();
+    chapter22fullnnwithoptimizer();
 
-    generateSpiralCSV();
+    // generateSpiralCSV();
 
 
 

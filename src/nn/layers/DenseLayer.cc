@@ -31,6 +31,36 @@ DenseLayer::DenseLayer(int input_size, int no_of_nodes) : input_size_(input_size
     bias_ = mynn::Mat( 1, no_of_nodes_);
 }
 
+DenseLayer::DenseLayer(int input_size, int no_of_nodes,double l1_weight_regularizer,double l1_bias_regularizer, double l2_weight_regularizer, double l2_bias_regularizer)
+ : input_size_(input_size), 
+ no_of_nodes_(no_of_nodes),
+ l1_weight_regularizer_(l1_weight_regularizer),
+ l1_bias_regularizer_(l1_bias_regularizer),
+ l2_weight_regularizer_(l2_weight_regularizer),
+ l2_bias_regularizer_(l2_bias_regularizer)
+ {
+    // set random weight to each of the nodes (of size input_size);
+    
+    std::vector<std::vector<double>> weights;
+    std::vector<double> bias;
+
+    for(int i = 0 ; i < no_of_nodes_; ++i) {
+        weights.push_back(math::random::GetRandomNormVector(0, 1, input_size_));
+        // scaling the weights down, i dont know why.
+        for(auto& item: weights.back())
+            item /= 100;
+    }
+
+    weights_ = mynn::Mat(weights);
+
+    // set random bias for each nodes
+    // in the original code this was set to 0, but lemme keep this as randoms to know why
+    // they kept it as 0;
+    bias = math::random::GetRandomNormVector(0, 1, no_of_nodes_);
+    // bias_ = mynn::Mat( 1, no_of_nodes_, bias);
+    bias_ = mynn::Mat( 1, no_of_nodes_);
+}
+
 
 void DenseLayer::setWeights(mynn::Mat weights) {
     weights_ = weights;
@@ -128,6 +158,38 @@ std::tuple<mynn::Mat, mynn::Mat, mynn::Mat> DenseLayer::backward(mynn::Mat dl_dz
         dl_db(0, i) = sum;
     }
     mynn::Mat dl_dx = dl_dz.multiply(weights_);
+
+    // regularizer,
+    dl_dw = dl_dw.transpose();
+    if(l1_weight_regularizer_ > 0) {
+        mynn::Mat dl_dwregu(weights_.size().rows, weights_.size().cols);
+        for(int i = 0,c = weights_.size().rows; i < c; ++i) {
+            for(int j = 0,r = weights_.size().cols; j < r; ++j) {
+                dl_dwregu(i,j) = weights_(i , j) >= 0 ? l1_weight_regularizer_ : -l1_weight_regularizer_;
+            }
+        }
+        dl_dw = dl_dw + dl_dwregu;
+    }
+    if(l2_weight_regularizer_ > 0) {
+        mynn::Mat dl_dwregu(weights_.size().rows, weights_.size().cols);
+        dl_dwregu = weights_ * (2 * l2_weight_regularizer_);
+        dl_dw = dl_dw + dl_dwregu;
+    }
+    if(l1_bias_regularizer_ > 0) {
+        mynn::Mat dl_dbregu(bias_.size().rows, bias_.size().cols);
+        for(int i = 0,c = bias_.size().rows; i < c; ++i) {
+            for(int j = 0,r = bias_.size().cols; j < r; ++j) {
+                dl_dbregu(i,j) = bias_(i , j) >= 0 ? l1_bias_regularizer_ : -l1_bias_regularizer_;
+            }
+        }
+        dl_db = dl_db + dl_dbregu;
+    }
+    if(l2_bias_regularizer_ > 0) {
+        mynn::Mat dl_dbregu(dl_db.size().rows, dl_db.size().cols);
+        dl_dbregu = bias_ * (2 * l2_bias_regularizer_);
+        dl_db = dl_db + dl_dbregu;
+    }
+    dl_dw = dl_dw.transpose();
 
     std::tuple<mynn::Mat, mynn::Mat, mynn::Mat> result = {dl_dw, dl_db, dl_dx};
     return result;

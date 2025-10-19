@@ -127,3 +127,49 @@ void CategoricalCrossEntropyL::clip(
         }
     }
 }
+
+double CategoricalCrossEntropyL::regularizationLoss(DenseLayer* layer) {
+    double regularizationLoss = 0;
+    if(layer->getL1WR() > 0) {
+        double l1sum = 0;
+        auto w = layer->getWeights();
+        for(int i = 0, r = w.size().rows; i<r; ++i) {
+            for(int j = 0, c = w.size().cols; j<c; ++j) {
+                l1sum += abs(w(i, j)); 
+            }
+        }
+        regularizationLoss += layer->getL1WR() * l1sum;
+    }
+    if(layer->getL1BR() > 0) {
+        double l1sum = 0;
+        auto b = layer->getBias();
+        for(int i = 0, r = b.size().rows; i<r; ++i) {
+            for(int j = 0, c = b.size().cols; j<c; ++j) {
+                l1sum += abs(b(i, j)); 
+            }
+        }
+        regularizationLoss += layer->getL1BR() * l1sum;
+    }
+    if(layer->getL2WR() > 0) {
+        double l2sum = 0;
+        auto w = layer->getWeights();
+        for(int i = 0, r = w.size().rows; i<r; ++i) {
+            for(int j = 0, c = w.size().cols; j<c; ++j) {
+                l2sum += w(i, j) * w(i, j); 
+            }
+        }
+        regularizationLoss += layer->getL1WR() * l2sum;
+    }
+    if(layer->getL2BR() > 0) {
+        double l2sum = 0;
+        auto b = layer->getBias();
+        for(int i = 0, r = b.size().rows; i<r; ++i) {
+            for(int j = 0, c = b.size().cols; j<c; ++j) {
+                l2sum += b(i, j) * b(i, j); 
+            }
+        }
+        regularizationLoss += layer->getL2BR() * l2sum;
+    }
+
+    return regularizationLoss;
+}

@@ -14,4 +14,5 @@ class A_Softmax_L_CatergoricalCrossEntropy {
     public:
     std::tuple<mynn::Mat, mynn::Mat> forward(mynn::Mat input, mynn::Mat trueValues);
     mynn::Mat backward(mynn::Mat predicted, mynn::Mat trueValues);
+    double regularizationLoss(DenseLayer* layer);
 };

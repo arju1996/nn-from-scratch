@@ -4,6 +4,8 @@
 #include <vector>
 #include <cassert>
 #include <cmath>
+#include "layers/DenseLayer.h"
+
 
 #include "Mat.h"
 
@@ -51,6 +53,9 @@ class CategoricalCrossEntropyL {
     public:
     mynn::Mat forward(mynn::Mat predicted, mynn::Mat trueValues);
     void backward(mynn::Mat predicted, mynn::Mat trueValues);
+
+    // this should ideally be on the parent class called loss;
+    double regularizationLoss(DenseLayer* layer);
 
     void clip(double &x, double lower, double upper);
     void clip(

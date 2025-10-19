@@ -93,3 +93,49 @@ w -= learningrate * momterm/(1 - b1^t) /
 
 momterm = momterm * b1 + (1-b1) * dl_dw
 cacheterm = cacheterm * b2 + (1-b2) * dl_dw^2
+
+===
+Underfitting = The model is too simple and didn't learn enough.
+
+Overfitting = The model memorized the specific examples.
+or is what happens when your model learns the training data too well, confusing specific details for general rules
+
+Generalization is how well your machine learning model can apply what it learned to new, unseen data.
+or optimal
+
+===
+actually we should choose hyper parameter based on a validation data, and if we have limited data.
+take validation from training data itself,
+ie split data into k(say 5) parts
+take first part as validation data, find validation error
+take second part as val data, find val error
+..
+take 5th part as val data, find val error
+find mean validation error
+ie mean validatn error = 1/5 * (E1 + E2 + .. + E5)
+
+find mean VE for multiple set of hyper params,
+choose the set which gave lowest mean
+and train
+
+k fold cross validation:
+
+===
+data leakage, testing somehow leaks into training.
+as it already provides info about result;
+
+===
+l1 l2 regularization: / or penalty on weights
+usually bigger weights and bias means overfitting
+and smaller params means good generalization
+
+l1 loss += lambda * sum of all, abs (weights) 
+l2 loss += lambda * sum of all, weights ^ 2 
+l2 is usually prefered, cause of low penalyy for smaller weights
+
+==
+dl1w_dwm = lambda * {1 when dwm is +ve/0 or -1 when dwm is -ve}
+dl2w_dwm = 2 lambda wm
+l1 l2 regularization works better when training data is alot.
+
+===

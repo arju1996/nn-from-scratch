@@ -18,8 +18,11 @@ class DenseLayer {
     */
     mynn::Mat weights_;
     mynn::Mat bias_;
+    double l1_weight_regularizer_, l1_bias_regularizer_;
+    double l2_weight_regularizer_, l2_bias_regularizer_;
 public:
     DenseLayer(int input_size, int no_of_nodes);
+    DenseLayer(int input_size, int no_of_nodes,double l1_weight_regularizer,double l1_bias_regularizer, double l2_weight_regularizer, double l2_bias_regularizer);
     void PrintDenseLayer();
     void whatever();
     inline double VectorDotVector(std::vector<double> a, std::vector<double> b); //
@@ -32,5 +35,10 @@ public:
     void setBias(mynn::Mat bias);
     mynn::Mat getWeights();
     mynn::Mat getBias();
+
+    double getL1WR() {return l1_weight_regularizer_;}
+    double getL1BR() {return l1_bias_regularizer_;}
+    double getL2WR() {return l2_weight_regularizer_;}
+    double getL2BR() {return l2_bias_regularizer_;}
 
 };

@@ -36,3 +36,7 @@ mynn::Mat A_Softmax_L_CatergoricalCrossEntropy::backward(mynn::Mat predicted, my
 
     return loss;
 }
+
+double A_Softmax_L_CatergoricalCrossEntropy::regularizationLoss(DenseLayer* layer) {
+    return loss_.regularizationLoss(layer);
+}
