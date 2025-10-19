@@ -314,7 +314,7 @@ void chapter22fullnnwithoptimizer() {
     // dataset
     // std::vector<std::tuple<double, double, int>> data = math::dataset::GenerateSineDataV(3, 2, 0.2);
     // std::vector<std::tuple<double, double, int>> data = math::dataset::GenerateSineDataV(3, 50, 0.2);
-    std::vector<std::tuple<double, double, int>> data = math::dataset::GenerateSpiralData(3, 1000, 0.2);
+    std::vector<std::tuple<double, double, int>> data = math::dataset::GenerateSpiralData(3, 100, 0.2);
     // std::vector<std::tuple<double, double, int>> data = math::dataset::GenerateSpiralData(3, 5, 0.2);
     std::pair< std::vector<std::vector<double>>, std::vector<double>> inputandoutput = 
             spiltToInputAndOutputs(data);
@@ -331,6 +331,7 @@ void chapter22fullnnwithoptimizer() {
     // DenseLayer L1 {2, 64};
     DenseLayer L1 {2, 64, 0, 0, 5e-4, 5e-4};
     ReLU activation1;
+    DropoutLayer D1 {0.1};
     DenseLayer L2 {64, 3};
     A_Softmax_L_CatergoricalCrossEntropy lossactivation;
     // OptimizerSGD optimizer(1, 0.001, true, 0.9, true);
@@ -347,7 +348,11 @@ void chapter22fullnnwithoptimizer() {
         // forward
         auto L1output = L1.forward(input);
         auto activation1output = activation1.run(L1output);
-        auto L2output = L2.forward(activation1output);
+        
+        auto dropout1output = D1.forward(activation1output);
+        // auto L2output = L2.forward(activation1output);
+
+        auto L2output = L2.forward(dropout1output);
         auto lossactivationoutput__lose = lossactivation.forward(L2output, groundTruth);
 
         if (i % 100 == 0) {
@@ -363,7 +368,11 @@ void chapter22fullnnwithoptimizer() {
         // backward
         auto L2__dl_dz = lossactivation.backward(std::get<0>(lossactivationoutput__lose), groundTruth);
         auto L2__tupl_dl_dw___dl_db___dl_dx = L2.backward(L2__dl_dz, activation1output);
-        auto L1__dl_dz = activation1.backward(std::get<2>(L2__tupl_dl_dw___dl_db___dl_dx), L1output);
+        
+        auto l2_dl_dx = D1.backward(std::get<2>(L2__tupl_dl_dw___dl_db___dl_dx));
+        // auto L1__dl_dz = activation1.backward(std::get<2>(L2__tupl_dl_dw___dl_db___dl_dx), L1output);
+        
+        auto L1__dl_dz = activation1.backward(l2_dl_dx, L1output);
         auto L1__tupl_dl_dw___dl_db___dl_dx = L1.backward(L1__dl_dz, input);
 
 
@@ -402,7 +411,11 @@ void chapter22fullnnwithoptimizer() {
 
     auto testL1output = L1.forward(testinginput);
     auto testactivation1output = activation1.run(testL1output);
+    auto dropout1output = D1.forward(testactivation1output);
+    /*
     auto testL2output = L2.forward(testactivation1output);
+    */
+    auto testL2output = L2.forward(dropout1output);
     auto testlossactivationoutput__lose = lossactivation.forward(testL2output, testinggroundTruth);
 
         mynn::Mat testlossCol = std::get<1>(testlossactivationoutput__lose);

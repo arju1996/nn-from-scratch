@@ -46,6 +46,7 @@ namespace mynn {
         Mat multiply(const Mat& other) const;
         Mat multiplyasthetic(const Mat& other) const;
         Mat multiplybasic(const Mat& other) const;
+        Mat multiplyElementWise(const Mat& other) const;
         double meanof1d() const;
         Mat sq() const;
         Mat sqrt() const;

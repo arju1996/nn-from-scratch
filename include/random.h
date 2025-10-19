@@ -37,6 +37,35 @@ namespace math {
             return value;
         }
 
+        inline double GetRandomNormalWithSeed(double mu, double sigma, unsigned int seed) {
+            // auto const seed = 123;
+            static std::mt19937 urbg(seed);
+            auto dist = std::normal_distribution<double>{mu, sigma};
+            auto value = dist(urbg);
+            return value;
+        }
+
+        inline std::vector<double> GetBernoulliSamples(double p, unsigned int seed, int size) {
+            std::mt19937 gen(seed);
+            std::binomial_distribution<int> dist(1, p);
+            std::vector<double> results(size);
+            for (auto &v : results)
+                v = dist(gen);
+            return results;
+        }
+        
+        inline std::vector<std::vector<double>> GetBernoulliSamples(double p, unsigned int seed, int rows, int cols) {
+            std::mt19937 gen(seed);
+            std::binomial_distribution<int> dist(1, p);
+            std::vector<std::vector<double>> results(rows, std::vector<double>(cols));
+            for(int i = 0; i<rows; ++i) {
+                for(int j = 0; j<cols; ++j) {
+                    results[i][j] = dist(gen);
+                }
+            }
+            return results;
+        }
+
         inline std::vector<double> GetRandomNormVector(double mu, double sigma, int size) {
             std::vector<double> result;
             result.reserve(size);
@@ -115,6 +144,28 @@ namespace math {
                 for(int j = 0; j < points_per_class; ++j) {
                     double r = static_cast<double>(j) / points_per_class; // radius grows linearly
                     double t = class_num * 4.0 + r * 4.0 + random::GetRandomNormalWithSeed(0, noise);
+                    
+                    double x = r * std::sin(t * 2.5);
+                    double y = r * std::cos(t * 2.5);
+                    
+                    result.push_back(std::make_tuple(x, y, class_num));
+                }
+            }
+            return result;
+        }
+
+        inline std::vector<std::tuple<double, double, int>> GenerateTestingSpiralData(
+            int num_classes,
+            int points_per_class,
+            double noise = 0.1
+        ) {
+            std::vector<std::tuple<double, double, int>> result;
+            
+            for(int class_num = 0; class_num < num_classes; ++class_num) {
+                for(int j = 0; j < points_per_class; ++j) {
+                    double r = static_cast<double>(j) / points_per_class; // radius grows linearly
+                    // double t = class_num * 4.0 + r * 4.0 + random::GetRandomNormal(0, noise);
+                    double t = class_num * 4.0 + r * 4.0 + random::GetRandomNormalWithSeed(0, noise, 324);
                     
                     double x = r * std::sin(t * 2.5);
                     double y = r * std::cos(t * 2.5);

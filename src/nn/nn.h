@@ -9,3 +9,4 @@
 #include "optimizer/OptimizerAdagrad.h"
 #include "optimizer/OptimizerRMSprop.h"
 #include "optimizer/OptimizerADAM.h"
+#include "layers/DropoutLayer.h"

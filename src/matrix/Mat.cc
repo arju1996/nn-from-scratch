@@ -207,6 +207,21 @@ mynn::Mat mynn::Mat::multiplybasic(const Mat& other) const {
     return result;
 }
 
+mynn::Mat mynn::Mat::multiplyElementWise(const Mat& other) const {
+    if (this->size() != other.size())
+        throw std::invalid_argument("Cannot multiply.");
+
+    Mat result(this->size().rows, other.size().cols);
+
+    for(int i = 0, r = this->size().rows; i < r; ++i) {
+        for(int j = 0, c = other.size().cols; j < c; ++j) {
+            result(i,j) = this->operator()(i,j) * other(i,j);
+        }
+    }
+    return result;
+}
+
+
 double mynn::Mat::meanof1d() const {
     // hi
     if(this->size().rows == 1 || this->size().cols != 1) {

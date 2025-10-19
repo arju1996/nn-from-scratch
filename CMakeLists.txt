@@ -20,6 +20,8 @@ src/nn/optimizer/OptimizerSGD.cc
 src/nn/optimizer/OptimizerAdagrad.cc
 src/nn/optimizer/OptimizerRMSprop.cc
 src/nn/optimizer/OptimizerADAM.cc
+src/nn/layers/DropoutLayer.cc
+
 
 )
 
