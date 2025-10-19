@@ -81,3 +81,6 @@ loss doesnt have to have forward, calculate is better name ig
 
 denseLayer
 create a random value matrix
+
+==
+find accuracy from anotteher dataset

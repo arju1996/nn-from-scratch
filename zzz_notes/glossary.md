@@ -139,3 +139,18 @@ dl2w_dwm = 2 lambda wm
 l1 l2 regularization works better when training data is alot.
 
 ===
+
+why dropout?
+1. improve generalization
+2. some neurons copy output of some other neuron,
+or become too depended on an another neuron. (co adaption problem)
+
+i think the idea is to distribute memory or rules;
+
+steps:
+at random iterations disable some neurons, ie set its output to 0
+
+but then i need to scale other neurons back up in testing.(if we keep dropout in testing)
+ie if dropout rate is 0.2
+then
+[0 1 1 1 1] / 0.8
