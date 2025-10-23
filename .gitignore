@@ -6,3 +6,7 @@ build/**
 *.ilk
 *.obj
 *.pdb
+.vs/
+out/
+temp/
+
