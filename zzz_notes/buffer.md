@@ -84,3 +84,13 @@ create a random value matrix
 
 ==
 find accuracy from anotteher dataset
+
+===
+
+lec30:
+till now in the code the loss, was cross entropy loss, why suddenly change it to (predicted-actual) ^ 2?
+avoid 2 denselayerconstructors
+implement dropout layer code
+
+try k fold validation
+test if dropout has improved testing accuracy with 1000 dataset;

@@ -8,7 +8,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/nn/mix)
 
 
 add_executable(neural_net 
-main.cpp 
+# main.cpp
+main_final.cpp
 src/nn/layers/DenseLayer.cc
 src/nn/activation/ReLU.cc
 src/nn/activation/Softmax.cc
