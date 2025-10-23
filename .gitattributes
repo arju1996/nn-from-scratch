@@ -1,0 +1,14 @@
+# Set default behavior to normalize line endings
+* text=auto
+
+# Force certain files to always use LF
+*.cpp text eol=lf
+*.h text eol=lf
+*.hpp text eol=lf
+*.md text eolf=lf
+
+# for git archive
+.vscode/* export-ignore
+.vs/* export-ignore
+out/* export-ignore
+temp/* export-ignore
