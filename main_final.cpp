@@ -64,6 +64,16 @@ int main() {
 
     groundTruth = groundTruth.transpose();
 
+    //
+    // this is actually not optimized in any way, but may be in call stack it might be;
+    std::vector<std::vector<double>> in;
+    std::vector<double> out;
+    spiltToInputAndOutputs(data, in, out);
+    mynn::Mat inp(in);
+    mynn::Mat groundT(out);
+    groundT = groundT.transpose(); // actually i can do the transpose in the constructor itself as its 1d data
+    //
+    
     //return 0;
 
 

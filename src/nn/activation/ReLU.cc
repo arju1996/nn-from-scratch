@@ -4,7 +4,7 @@ ReLU::ReLU() {
 
 }
 
-mynn::Mat ReLU::run(mynn::Mat input) {
+mynn::Mat ReLU::run(mynn::Mat& input) {
     mynn::Mat output(input.size().rows, input.size().cols);
     mynn::Size inputsize = input.size();
     for(int i = 0; i<inputsize.rows; ++i) {

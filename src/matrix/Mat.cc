@@ -16,7 +16,29 @@ mynn::Mat::Mat(int rows, int cols, const std::vector<double>& data) : rows_(rows
 
 };
 
+mynn::Mat::Mat(int rows, int cols,std::vector<double>&& data) noexcept : rows_(rows), cols_(cols), data_(std::move(data)) {
+};
+
 mynn::Mat::Mat(const std::vector<double>& data) : rows_(1), cols_(data.size()), data_(data) {}
+mynn::Mat::Mat(std::vector<double>&& data) noexcept : rows_(1), cols_(data.size()), data_(std::move(data)) {}
+
+void mynn::Mat::FlattenFrom(const std::vector<std::vector<double>>& data) {
+    // funnily this doesnt give any improvements cause move iterator works same as copy
+    // for primitive data types
+    int rows = data.size();
+    rows_ = rows;
+    int cols = data.at(0).size();
+    cols_ = cols;
+    data_.reserve(rows_ * cols_);
+
+    for (auto &row : data) {
+        assert(cols == row.size());
+        data_.insert(data_.end(),
+            std::make_move_iterator(row.begin()),
+            std::make_move_iterator(row.end())
+        );
+    }
+}
 
 
 mynn::Mat::Mat(const std::vector<std::vector<double>>& data) {
@@ -24,12 +46,46 @@ mynn::Mat::Mat(const std::vector<std::vector<double>>& data) {
     rows_ = rows;
     int cols = data.at(0).size();
     cols_ = cols;
+    data_.reserve(rows_ * cols_);
     for(int i = 0; i < rows; ++i) {
         assert(cols == data[i].size());
         data_.insert(data_.end(), data[i].begin(), data[i].end());
     }
 }
 
+mynn::Mat::Mat(Mat&& other) {
+    rows_ = other.rows_;
+    cols_ = other.cols_;
+    data_ = std::move(other.data_);
+}
+mynn::Mat::Mat(const Mat& other) : rows_(other.rows_), cols_(other.cols_), data_(other.data_) {
+
+}
+
+mynn::Mat& mynn::Mat::operator=(const Mat& other) {
+    if (this == &other) return *this;
+    // delete other;
+    rows_ = other.rows_;
+    cols_ = other.cols_;
+    data_ = other.data_;
+    return *this;
+}
+
+mynn::Mat& mynn::Mat::operator=(Mat&& other) {
+    if (this == &other) return *this;
+    rows_ = other.rows_;
+    cols_ = other.cols_;
+    data_ = std::move(other.data_);
+}
+
+
+
+
+mynn::Mat::Mat(std::vector<std::vector<double>>&& data) noexcept {
+    FlattenFrom(std::move(data));
+}
+
+/*
 double& mynn::Mat::operator()(int i, int j) {
     if (i < 0 || i >= rows_)
         throw std::out_of_range("Row index out of bound.");
@@ -44,7 +100,7 @@ const double& mynn::Mat::operator()(int i, int j) const{
         throw std::out_of_range("Col index out of bound.");
     return data_[i * cols_ + j];
 }
-
+*/
 mynn::Mat mynn::Mat::operator+(const mynn::Mat& Other) {
     mynn::Mat result (this->rows_, this->cols_);
     if (this->size() == Other.size()) {
@@ -107,6 +163,13 @@ mynn::Mat mynn::Mat::row(int i) const {
     }
     return row1;
 }
+
+void mynn::Mat::setRow(int i, Mat row) {
+    for (int j = 0; j<cols_; ++j) {
+        data_[i * cols_ + j] = row.data_[j];
+    }
+}
+
 
 mynn::Mat mynn::Mat::col(int i) const {
     // if this could not create any new memory it would be good;
@@ -313,4 +376,16 @@ mynn::Mat mynn::Mat::operator+(const double number) {
         }
     }
     return result;
+}
+
+mynn::Mat mynn::Mat::getMulRows(size_t start, size_t end) {
+    mynn::Mat result(end-start, cols_);
+    for(size_t i = start; i < end; ++i) {
+        result.setRow(i - start, row(i));
+    }
+    return result;
+}
+
+std::pair<mynn::Mat, mynn::Mat> mynn::Mat::splitRows(size_t splitindex) {
+    return {getMulRows(0, splitindex), getMulRows(splitindex, rows_)};
 }
