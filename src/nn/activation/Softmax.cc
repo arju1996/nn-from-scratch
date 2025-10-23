@@ -36,6 +36,8 @@ mynn::Mat Softmax::forward(mynn::Mat input) {
     // then devide each item on the row by the sum;
     for(int i = 0, r = input.size().rows; i < r; ++i) {
         // find biggest, find sum of ex;
+        // TODO: VALIDATE
+        // this could be an issue actually, ie max cannot be zero, what if all negs 
         double max = 0;
         for(int j = 0, c = input.size().cols; j < c; ++j) {
             if(input(i,j)>max)

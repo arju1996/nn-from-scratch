@@ -4,6 +4,8 @@ project(neural_net VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# add_compile_options(/O2)
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/matrix)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/nn)
@@ -25,6 +27,7 @@ src/nn/optimizer/OptimizerAdagrad.cc
 src/nn/optimizer/OptimizerRMSprop.cc
 src/nn/optimizer/OptimizerADAM.cc
 src/nn/layers/DropoutLayer.cc
+src/nn/internal/fast.cc
 
 
 )
@@ -43,3 +46,15 @@ src/nn/layers/DropoutLayer.cc
 #     src/matrix/Mat.cc
 #     src/matrix/test.cc 
 # )
+
+ add_executable(
+    benchmark
+    main_benchmark.cpp
+
+    src/matrix/Mat.cc
+    src/nn/layers/DenseLayer.cc
+    src/nn/layers/DropoutLayer.cc
+    src/nn/activation/ReLU.cc
+    src/nn/activation/Softmax.cc
+    src/nn/internal/fast.cc
+)

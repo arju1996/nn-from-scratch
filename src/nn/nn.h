@@ -10,3 +10,4 @@
 #include "optimizer/OptimizerRMSprop.h"
 #include "optimizer/OptimizerADAM.h"
 #include "layers/DropoutLayer.h"
+#include "internal/fast.h"
