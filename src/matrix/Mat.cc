@@ -1,5 +1,8 @@
 #include "Mat.h"
 
+#include <cmath>
+
+
 
 mynn::Mat::Mat() : rows_(0), cols_(0), data_() {
 

@@ -51,4 +51,6 @@ namespace mynn {
         Mat sq() const;
         Mat sqrt() const;
     };
+
+    std::ostream& operator<<(std::ostream& os, const Mat& m);
 }

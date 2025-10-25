@@ -1,4 +1,5 @@
 #include "Softmax.h"
+#include <algorithm>
 #include <cmath>
 
 std::vector<double> Softmax::run(std::vector<double> input) {
