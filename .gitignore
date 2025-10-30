@@ -10,4 +10,5 @@ build/**
 .vs/
 out/
 temp/
+examples/data/
 
