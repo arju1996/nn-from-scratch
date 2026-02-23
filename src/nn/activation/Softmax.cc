@@ -65,3 +65,18 @@ std::vector<std::vector<double>> Softmax::runInputBatch(std::vector<std::vector<
     }
     return output;
 }
+
+mynn::Mat Softmax::forward(const mynn::Mat& input, LayerCache* cache) {
+    if (cache) {
+        
+    }
+    return forward(input);
+}
+
+backwardResult Softmax::backward(const mynn::Mat& dl_da, LayerCache& cache) {
+    return {
+        std::nullopt,
+        std::nullopt,
+        std::nullopt
+    };
+}

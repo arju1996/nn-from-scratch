@@ -3,14 +3,6 @@
 
 #include "A_Softmax_L_CatergoricalCrossEntropy.h"
 
-// class ActivationSoftmax_LossCatergoricalCrossEntropy {
-//     Softmax activation;
-//     CategoricalCrossEntropyL loss;
-//     public:
-//     mynn::Mat forward(mynn::Mat input, mynn::Mat trueValues);
-//     void backward(mynn::Mat predicted, mynn::Mat trueValues);
-// };
-
 std::tuple<mynn::Mat, mynn::Mat> A_Softmax_L_CatergoricalCrossEntropy::forward(mynn::Mat input, mynn::Mat trueValues) {
     //
     auto predicted = activation_.forward(input);
@@ -39,4 +31,20 @@ mynn::Mat A_Softmax_L_CatergoricalCrossEntropy::backward(mynn::Mat predicted, my
 
 double A_Softmax_L_CatergoricalCrossEntropy::regularizationLoss(DenseLayer* layer) {
     return loss_.regularizationLoss(layer);
+}
+
+mynn::Mat A_Softmax_L_CatergoricalCrossEntropy::forwardL(mynn::Mat input, mynn::Mat trueValue) {
+    auto predicted = activation_.forward(input);
+    auto loss = loss_.forward(predicted, trueValue);
+    return loss;
+}
+
+
+mynn::Mat A_Softmax_L_CatergoricalCrossEntropy::backwardL(mynn::Mat predicted, mynn::Mat trueValue) {
+    return backward(predicted, trueValue);   
+}
+
+mynn::Mat A_Softmax_L_CatergoricalCrossEntropy::forwardwithoutLoss(mynn::Mat input) {
+    auto predicted = activation_.forward(input);
+    return predicted;
 }

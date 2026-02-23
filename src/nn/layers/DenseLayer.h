@@ -8,8 +8,9 @@
 
 #include "random.h"
 #include "Mat.h"
+#include "layer.h"
 
-class DenseLayer {
+class DenseLayer : public mynnLayer {
     int input_size_;
     int no_of_nodes_;
     /*
@@ -27,7 +28,7 @@ public:
     void whatever();
     inline double VectorDotVector(std::vector<double> a, std::vector<double> b); //
     std::vector<double> run(std::vector<double> input); //
-    mynn::Mat forward(mynn::Mat input);
+    mynn::Mat forwardold(mynn::Mat input);
     std::tuple<mynn::Mat, mynn::Mat, mynn::Mat> backward(mynn::Mat dl_dz, mynn::Mat input);
     void backwardInputBatch(std::vector<std::vector<double>> dl_dz); //
     std::vector<std::vector<double>> runInputBatch(std::vector<std::vector<double>> inputBatch); //
@@ -41,4 +42,6 @@ public:
     double getL2WR() {return l2_weight_regularizer_;}
     double getL2BR() {return l2_bias_regularizer_;}
 
+    mynn::Mat forward(const mynn::Mat& input, LayerCache* cache = nullptr) override;
+    backwardResult backward(const mynn::Mat& dl_dz, LayerCache& cache) override;
 };

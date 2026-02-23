@@ -48,6 +48,31 @@ src/nn/internal/fast.cc
 # )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/dataset)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/framework)
+
+
+ add_executable(
+    framework
+    main_framework2.cpp
+
+    src/Dataset/Dataset.cc
+
+    src/matrix/Mat.cc
+    src/nn/layers/DenseLayer.cc
+    src/nn/layers/DropoutLayer.cc
+    src/nn/activation/ReLU.cc
+    src/nn/activation/Softmax.cc
+    src/nn/loss/LossFunction.cc
+    src/nn/loss/MSE.cc
+    src/nn/mix/A_Softmax_L_CatergoricalCrossEntropy.cc
+    src/nn/optimizer/OptimizerSGD.cc
+    src/nn/optimizer/OptimizerAdagrad.cc
+    src/nn/optimizer/OptimizerRMSprop.cc
+    src/nn/optimizer/OptimizerADAM.cc
+
+    src/framework/NNFramework.cc
+    # src/nn/internal/fast.cc
+)
 
  add_executable(
     dataset

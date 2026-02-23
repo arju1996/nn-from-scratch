@@ -1,16 +1,9 @@
 #include "layers/DenseLayer.h"
 
 #include <unordered_map>
+#include "layer.h"
 
-// class OptimizerSGD {
-//     double learning_rate_;
-//     public:
-//     OptimizerSGD();
-//     OptimizerSGD(double learning_rate);
-//     void updateParams(DenseLayer& layer, mynn::Mat dl_dw, mynn::Mat dl_db);
-// };
-
-class OptimizerADAGRAD {
+class OptimizerADAGRAD : public mynnOptimizer {
     double learning_rate_;
     double current_learning_rate_;
     double decay_;
@@ -24,9 +17,9 @@ class OptimizerADAGRAD {
 
     public:
     OptimizerADAGRAD(double learning_rate, double decay, bool use_decay, double epsilon);
-    void preUpdateParams();
-    void updateParams(DenseLayer& layer, mynn::Mat dl_dw, mynn::Mat dl_db);
-    void postUpdateParams();
+    void preUpdateParams() override;
+    void updateParams(DenseLayer& layer, mynn::Mat dl_dw, mynn::Mat dl_db) override;
+    void postUpdateParams() override;
 
     double getCurrentLearningRate() const {
         return current_learning_rate_;

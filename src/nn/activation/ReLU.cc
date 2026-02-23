@@ -4,7 +4,7 @@ ReLU::ReLU() {
 
 }
 
-mynn::Mat ReLU::run(mynn::Mat& input) {
+mynn::Mat ReLU::run(const mynn::Mat& input) {
     mynn::Mat output(input.size().rows, input.size().cols);
     mynn::Size inputsize = input.size();
     for(int i = 0; i<inputsize.rows; ++i) {
@@ -36,4 +36,20 @@ mynn::Mat ReLU::backward(mynn::Mat dl_da, mynn::Mat input) {
 
     // loop in z1, z2, z3 and update dl_dz
     return dl_dz;
+}
+
+
+mynn::Mat ReLU::forward(const mynn::Mat& input, LayerCache* cache) {
+    if (cache) {
+        cache->data = input;
+    }
+    return run(input);
+}
+
+backwardResult ReLU::backward(const mynn::Mat& dl_da, LayerCache& cache) {
+    return {
+        backward(dl_da, cache.data),
+        std::nullopt,
+        std::nullopt
+    };
 }

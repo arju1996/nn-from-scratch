@@ -66,7 +66,7 @@ mynn::Mat mynn::fast::softmax_forward(const mynn::Mat& input) {
 
         // find max;
         double max = inputith_row[0];
-        for(int j = 0; j < cols; ++i) {
+        for(int j = 0; j < cols; ++j) {
             if (inputith_row[j] > max)
                 max = inputith_row[j];
         }
@@ -81,7 +81,7 @@ mynn::Mat mynn::fast::softmax_forward(const mynn::Mat& input) {
 
         // div with sumexp
         const double inv = 1.0 / sumofexp;
-        for(int j = 0; j < cols; ++i) {
+        for(int j = 0; j < cols; ++j) {
             outputith_row[j] *= inv;
         }
     }

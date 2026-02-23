@@ -11,3 +11,4 @@
 #include "optimizer/OptimizerADAM.h"
 #include "layers/DropoutLayer.h"
 #include "internal/fast.h"
+#include "loss/MSE.h"

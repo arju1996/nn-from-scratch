@@ -116,7 +116,7 @@ std::vector<double> DenseLayer::run(std::vector<double> input) {
     return result;
 }
 
-mynn::Mat DenseLayer::forward(mynn::Mat input) {
+mynn::Mat DenseLayer::forwardold(mynn::Mat input) {
     // mynn::Mat result = weights_ * input + bias_;
     // mynn::Mat result = weights_.multiply(input) + bias_;
     // mynn::Mat result = input.multiply(weights_) + bias_;
@@ -199,5 +199,20 @@ void DenseLayer::backwardInputBatch(std::vector<std::vector<double>> dl_dz) {
     // std::vector<double> dl_dw = xt * dl_dz;
     // std::vector<double> dl_db = dl_dz; // raw sum, ie dl_db[i] = sum(dl_dz_tranpose[i])
     // std::vector<double> dl_dx = dl_dz * weights_;
+}
+
+
+mynn::Mat DenseLayer::forward(const mynn::Mat& input, LayerCache* cache) {
+    if (cache) {
+        cache->data = input;
+    }
+    mynn::Mat result = input.multiply(weights_.transpose()) + bias_;
+    return result;
+}
+
+backwardResult DenseLayer::backward(const mynn::Mat& dl_dz, LayerCache& cache) {
+    auto t = backward(dl_dz, cache.data);
+    // {dl_dw, dl_db, dl_dx};
+    return {std::get<2>(t), std::get<0>(t), std::get<1>(t)};
 }
 
